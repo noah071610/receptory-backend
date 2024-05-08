@@ -22,9 +22,12 @@ import { RefreshJwtGuard } from './guards/refresh-jwt-auth.guard';
 
 const getUserRes = (user: User) => {
   return {
-    userId: user.id,
+    userId: user.userId,
     userName: user.userName,
     userImage: user.userImage,
+    provider: user.provider,
+    plan: user.plan,
+    createdAt: user.createdAt,
   };
 };
 
@@ -51,6 +54,12 @@ export class AuthController {
   @Get()
   isAuthenticated(@Req() req) {
     return getUserRes(req.user);
+  }
+
+  @UseGuards(AuthGuard)
+  @Get('saves')
+  findUserSaves(@Req() req) {
+    return this.authService.findUserSaves(req.user.userId);
   }
 
   @Post()
@@ -90,7 +99,7 @@ export class AuthController {
       maxAge: 24 * 60 * 60 * 1000 * 30, //30 day
     });
 
-    return res.redirect(`http://localhost:3000/user/${user.id}`);
+    return res.redirect(`http://localhost:3000/user/${user.userId}`);
   }
 
   @Post('logout')

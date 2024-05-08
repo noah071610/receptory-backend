@@ -10,6 +10,7 @@ async function main() {
         userImage: 'https://avatars.githubusercontent.com/u/74864925?v=4',
         userName: 'Noah',
         provider: 'google',
+        plan: 2,
       },
     ],
   });

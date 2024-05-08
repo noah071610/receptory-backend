@@ -14,11 +14,12 @@ datasource db {
 }
 
 model User {
-  id  Int  @id @default(autoincrement())
+  userId  Int  @id @default(autoincrement())
   email String @unique
   userImage String?
   userName  String
   provider String
+  plan Int @default(0)
   password String?
 
   saves Save[]
@@ -27,16 +28,17 @@ model User {
 }
 
 model Save {
-  postId String @id @unique
-  thumbnail String
-  title String 
-  description String
+  pageId String @id @unique
+  thumbnail String?
+  title String?
+  description String?
+  format String
   lang String
   
-  content String
+  content Json
 
   userId Int
-  user User  @relation(fields: [userId], references: [id])
+  user User  @relation(fields: [userId], references: [userId])
 
   page Page?
 
@@ -45,18 +47,19 @@ model Save {
 }
 
 model Page {
-  postId String @id @unique
+  pageId String @id @unique
   thumbnail String
   title String 
   description String
+  format String
   lang String
   
-  content String
+  content Json
 
-  save Save  @relation(fields: [postId], references: [postId])
+  save Save  @relation(fields: [pageId], references: [pageId])
 
   userId Int
-  user User  @relation(fields: [userId], references: [id])
+  user User  @relation(fields: [userId], references: [userId])
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt

@@ -8,6 +8,7 @@ import { ConfigService } from '@nestjs/config';
 import { Prisma, User } from '@prisma/client';
 import * as bcrypt from 'bcrypt';
 import { ErrorMessage } from 'src/error/messages';
+import { saveSelector } from 'src/utils/selector';
 import { PayloadDto, PayloadForValidateDto } from './dto/payload.interface';
 
 @Injectable()
@@ -164,7 +165,7 @@ export class AuthService {
     }
 
     const payload: PayloadDto = {
-      id: findUser.id,
+      userId: findUser.userId,
       email: findUser.email,
     };
 
@@ -188,7 +189,7 @@ export class AuthService {
   async tokenValidateUser(payload: PayloadDto): Promise<any | undefined> {
     return await this.databaseService.user.findUnique({
       where: {
-        id: payload.id,
+        userId: payload.userId,
         email: payload.email,
       },
       select: {
@@ -197,9 +198,23 @@ export class AuthService {
     });
   }
 
+  async findUserSaves(userId: number) {
+    const saves = await this.databaseService.save.findMany({
+      where: {
+        userId,
+      },
+      orderBy: {
+        updatedAt: 'desc',
+      },
+      select: saveSelector,
+    });
+
+    return saves;
+  }
+
   async refreshToken(user: User) {
     const payload: PayloadDto = {
-      id: user.id,
+      userId: user.userId,
       email: user.email,
     };
 

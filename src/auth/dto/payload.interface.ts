@@ -3,7 +3,7 @@ import { IsInt, IsOptional, IsString } from 'class-validator';
 
 export class PayloadDto {
   @IsInt()
-  id: number;
+  userId: number;
 
   @IsString()
   email: string;

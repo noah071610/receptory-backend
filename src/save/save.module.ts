@@ -1,6 +1,6 @@
 import { Module } from '@nestjs/common';
-import { SaveService } from './save.service';
 import { SaveController } from './save.controller';
+import { SaveService } from './save.service';
 
 @Module({
   controllers: [SaveController],
