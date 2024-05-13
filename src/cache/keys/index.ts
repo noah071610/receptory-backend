@@ -1,4 +1,3 @@
 export const cacheKeys = {
-  template: `template`,
-  popular: `popular`,
+  page: (pageId: string) => `page$${pageId}`,
 } as const;
