@@ -1,5 +1,6 @@
-import { nanoid } from 'nanoid';
+import { customAlphabet, urlAlphabet } from 'nanoid';
 
 export default function getId() {
-  return nanoid(12);
+  const nanoid = customAlphabet(urlAlphabet, 15);
+  return nanoid();
 }

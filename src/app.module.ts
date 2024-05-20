@@ -11,9 +11,9 @@ import { AuthModule } from './auth/auth.module';
 import { CachedService } from './cache/cached.service';
 import { DatabaseModule } from './database/database.module';
 import { TransformInterceptor } from './interceptor/transform.interceptor';
-import { UploadModule } from './upload/upload.module';
 import { PageModule } from './page/page.module';
 import { SaveModule } from './save/save.module';
+import { UploadModule } from './upload/upload.module';
 
 // memo: 라이브러리 특성상 어쩔 수 없다.
 // eslint-disable-next-line @typescript-eslint/no-var-requires
@@ -24,7 +24,7 @@ const redisStore = require('cache-manager-redis-store').redisStore;
     CacheModule.register({
       isGlobal: true,
       store: redisStore,
-      host: 'localhost',
+      host: 'localhost', // todo
       port: 6379,
     }),
     JwtModule.register({

@@ -1,7 +1,8 @@
 import { CACHE_MANAGER, Cache } from '@nestjs/cache-manager';
-import { Inject, Injectable } from '@nestjs/common';
+import { HttpException, HttpStatus, Inject, Injectable } from '@nestjs/common';
 import { Page } from '@prisma/client';
 import { DatabaseService } from 'src/database/database.service';
+import { ErrorMessage } from 'src/error/messages';
 import { PageType } from 'src/types';
 import { cacheKeys } from './keys';
 
@@ -25,17 +26,19 @@ export class CachedService {
         },
       });
       if (!page) {
-        return null;
+        throw new HttpException(ErrorMessage.noPost, HttpStatus.NOT_FOUND);
       }
-      await this.cacheManager.set(pageId, page);
+
+      await this.cacheManager.set(cacheKeys.page(pageId), JSON.stringify(page));
       data = page;
     } else {
       const parsePage: Page = JSON.parse(pageJson);
       data = parsePage;
-      return {
-        ...data,
-        content: JSON.parse(data.content as string),
-      } as PageType;
     }
+
+    return {
+      ...data,
+      content: JSON.parse(data.content as string),
+    } as PageType;
   }
 }

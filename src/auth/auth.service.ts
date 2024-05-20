@@ -5,27 +5,32 @@ import { DatabaseService } from 'src/database/database.service';
 
 import { CACHE_MANAGER, Cache } from '@nestjs/cache-manager';
 import { ConfigService } from '@nestjs/config';
-import { Prisma, User } from '@prisma/client';
+import { User } from '@prisma/client';
 import * as bcrypt from 'bcrypt';
 import { ErrorMessage } from 'src/error/messages';
-import { saveSelector } from 'src/utils/selector';
-import { PayloadDto, PayloadForValidateDto } from './dto/payload.interface';
+import getId from 'src/utils/getId';
+import {
+  PayloadDto,
+  PayloadForValidateDto,
+  UserAuthPayload,
+} from './dto/payload.interface';
 
 @Injectable()
 export class AuthService {
   constructor(
     private readonly databaseService: DatabaseService,
+    // private readonly mailService: MailService,
     private readonly jwtService: JwtService,
     private readonly configService: ConfigService,
     @Inject(CACHE_MANAGER) private cacheManager: Cache,
   ) {}
 
-  async transformPassword(user: Prisma.UserCreateInput) {
+  async transformPassword(user: UserAuthPayload) {
     const hashed = await bcrypt.hash(user.password, 10);
     return hashed;
   }
 
-  async register(userDTO: Prisma.UserCreateInput, accessToken?: string) {
+  async register(userDTO: UserAuthPayload, accessToken?: string) {
     if (!userDTO.userName.trim()) {
       throw new HttpException(
         { msg: ErrorMessage.noUserName, data: 'userName' },
@@ -94,7 +99,7 @@ export class AuthService {
         : undefined;
 
       const createUser = await this.databaseService.user.create({
-        data: { ...userDTO, password },
+        data: { ...userDTO, userId: getId(), password },
       });
       return {
         msg: 'ok',
@@ -198,20 +203,6 @@ export class AuthService {
     });
   }
 
-  async findUserSaves(userId: number) {
-    const saves = await this.databaseService.save.findMany({
-      where: {
-        userId,
-      },
-      orderBy: {
-        updatedAt: 'desc',
-      },
-      select: saveSelector,
-    });
-
-    return saves;
-  }
-
   async refreshToken(user: User) {
     const payload: PayloadDto = {
       userId: user.userId,
@@ -228,5 +219,16 @@ export class AuthService {
         expiresIn: '7d',
       }),
     };
+  }
+
+  async deleteUser(user: User, feedback: string) {
+    console.log(feedback);
+
+    await this.databaseService.user.delete({
+      where: {
+        userId: user.userId,
+      },
+    });
+    return 'ok';
   }
 }

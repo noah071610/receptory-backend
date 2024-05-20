@@ -3,7 +3,7 @@ import { IsInt, IsOptional, IsString } from 'class-validator';
 
 export class PayloadDto {
   @IsInt()
-  userId: number;
+  userId: string;
 
   @IsString()
   email: string;
@@ -28,4 +28,27 @@ export class PayloadForValidateDto {
 
 export interface RegisterUserDto extends Prisma.UserCreateInput {
   accessToken?: string;
+}
+
+export class UserAuthPayload {
+  @IsString()
+  email: string;
+
+  @IsString()
+  userName: string;
+
+  @IsString()
+  provider: string;
+
+  @IsOptional()
+  @IsString()
+  userImage?: string;
+
+  @IsOptional()
+  @IsString()
+  accessToken?: string;
+
+  @IsOptional()
+  @IsString()
+  password?: string;
 }

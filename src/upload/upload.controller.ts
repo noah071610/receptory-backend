@@ -25,7 +25,7 @@ export class UploadController {
     //     new MaxFileSizeValidator({ maxSize: 1000 }),
     //     new FileTypeValidator({ fileType: 'image/jpeg' }),
     //   ],
-    // }), todo: 설정
+    // }),
   ) {
     const random_name =
       Array(32)

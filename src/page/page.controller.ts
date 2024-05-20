@@ -9,7 +9,7 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { AuthGuard } from 'src/auth/guards/auth.guard';
-import { SaveType } from 'src/types';
+import { Langs, SaveType } from 'src/types';
 import { PageService } from './page.service';
 
 @Controller('api/page')
@@ -31,5 +31,15 @@ export class PageController {
   @Patch('inactive')
   inactivePage(@Query('pageId') pageId: string, @Req() req) {
     return this.pageService.inactivePage(pageId, req.user.userId);
+  }
+
+  @UseGuards(AuthGuard)
+  @Patch('lang')
+  changeLang(
+    @Query('pageId') pageId: string,
+    @Query('lang') lang: Langs,
+    @Req() req,
+  ) {
+    return this.pageService.changeLang(pageId, req.user.userId, lang);
   }
 }

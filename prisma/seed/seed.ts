@@ -1,12 +1,19 @@
 import { PrismaClient } from '@prisma/client';
+import { customAlphabet, urlAlphabet } from 'nanoid';
 
 const prisma = new PrismaClient();
+
+function getId() {
+  const nanoid = customAlphabet(urlAlphabet, 15);
+  return nanoid();
+}
 
 async function main() {
   await prisma.user.createMany({
     data: [
       {
-        email: 'noah071610@gmail.com',
+        userId: getId(),
+        email: process.env.ADMIN_EMAIL,
         userImage: 'https://avatars.githubusercontent.com/u/74864925?v=4',
         userName: 'Noah',
         provider: 'google',

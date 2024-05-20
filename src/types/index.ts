@@ -18,7 +18,7 @@ export interface SectionType {
 }
 
 export interface PageContentType {
-  initSections: SectionType[];
+  homeSections: SectionType[];
   formSections: SectionType[];
   rendingSections: SectionType[];
   pageOptions: {

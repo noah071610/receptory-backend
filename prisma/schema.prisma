@@ -14,7 +14,7 @@ datasource db {
 }
 
 model User {
-  userId  Int  @id @default(autoincrement())
+  userId  String @id @unique
   email String @unique
   userImage String?
   userName  String
@@ -24,6 +24,19 @@ model User {
 
   saves Save[]
   pages Page[]
+  notifications Notification[]
+  createdAt DateTime @default(now())
+}
+
+model Notification {
+  id  Int  @id @default(autoincrement())
+  isRead Int @default(0)
+  text String
+
+  userId String
+  user User  @relation(fields: [userId], references: [userId], onDelete: Cascade)
+
+
   createdAt DateTime @default(now())
 }
 
@@ -37,8 +50,8 @@ model Save {
   
   content Json
 
-  userId Int
-  user User  @relation(fields: [userId], references: [userId])
+  userId String
+  user User  @relation(fields: [userId], references: [userId], onDelete: Cascade)
 
   page Page?
 
@@ -56,10 +69,10 @@ model Page {
   
   content Json
 
-  save Save  @relation(fields: [pageId], references: [pageId])
+  save Save  @relation(fields: [pageId], references: [pageId], onDelete: Cascade)
 
-  userId Int
-  user User  @relation(fields: [userId], references: [userId])
+  userId String
+  user User  @relation(fields: [userId], references: [userId], onDelete: Cascade)
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt

@@ -3,7 +3,7 @@ import { Inject, Injectable } from '@nestjs/common';
 import { CachedService } from 'src/cache/cached.service';
 import { cacheKeys } from 'src/cache/keys';
 import { DatabaseService } from 'src/database/database.service';
-import { SaveType } from 'src/types';
+import { Langs, SaveType } from 'src/types';
 
 @Injectable()
 export class PageService {
@@ -19,7 +19,7 @@ export class PageService {
     return page;
   }
 
-  async deploy(pageDto: SaveType, userId: number) {
+  async deploy(pageDto: SaveType, userId: string) {
     const { content, pageId } = pageDto;
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const { currentUsedColors, currentUsedImages, stage, ...pageContent } =
@@ -37,20 +37,22 @@ export class PageService {
       update: data,
     });
 
-    await this.cacheManager.set(pageId, JSON.stringify(savePage));
+    await this.cacheManager.set(
+      cacheKeys.page(pageId),
+      JSON.stringify(savePage),
+    );
 
     data.content = JSON.stringify(content);
 
-    await this.databaseService.save.upsert({
-      where: { userId, pageId: pageDto.pageId }, // 업데이트 또는 생성할 사용자의 고유 식별자
-      create: data,
-      update: data,
+    await this.databaseService.save.update({
+      where: { userId, pageId }, // 업데이트 또는 생성할 사용자의 고유 식별자
+      data,
     });
 
     return 'ok';
   }
 
-  async inactivePage(pageId: string, userId: number) {
+  async inactivePage(pageId: string, userId: string) {
     await this.databaseService.page.update({
       where: {
         pageId,
@@ -68,6 +70,40 @@ export class PageService {
       },
       data: {
         format: 'inactive',
+      },
+    });
+
+    await this.cacheManager.del(cacheKeys.page(pageId));
+
+    return 'ok';
+  }
+
+  async changeLang(pageId: string, userId: string, lang: Langs) {
+    const page = await this.databaseService.page.findUnique({
+      where: {
+        pageId,
+        userId,
+      },
+    });
+    if (page) {
+      await this.databaseService.page.update({
+        where: {
+          pageId,
+          userId,
+        },
+        data: {
+          lang,
+        },
+      });
+    }
+
+    await this.databaseService.save.update({
+      where: {
+        pageId,
+        userId,
+      },
+      data: {
+        lang,
       },
     });
 

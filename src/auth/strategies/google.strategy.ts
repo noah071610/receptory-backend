@@ -2,9 +2,9 @@ import { CACHE_MANAGER, Cache } from '@nestjs/cache-manager';
 import { Inject, Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config'; // ConfigService 사용을 위해 필요
 import { PassportStrategy } from '@nestjs/passport';
-import { Prisma } from '@prisma/client';
 import { Strategy, VerifyCallback } from 'passport-google-oauth20';
 import { _url } from 'src/config';
+import { UserAuthPayload } from '../dto/payload.interface';
 
 @Injectable()
 export class GoogleStrategy extends PassportStrategy(Strategy, 'google') {
@@ -31,7 +31,7 @@ export class GoogleStrategy extends PassportStrategy(Strategy, 'google') {
     const { name, emails, photos } = profile;
 
     const email = emails[0].value;
-    const user: Prisma.UserCreateInput = {
+    const user: UserAuthPayload = {
       email,
       userName: `${name.givenName}${name.familyName ? ' ' + name.familyName : ''}`,
       provider: profile.provider,

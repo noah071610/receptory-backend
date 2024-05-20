@@ -16,22 +16,19 @@ export class UploadService {
   });
 
   async upload(fileName: string, file: Buffer) {
-    if (process.env.NODE_ENV === 'development') {
-    } else {
-      const command = new PutObjectCommand({
-        Bucket: this.configService.getOrThrow('AWS_BUCKET_NAME'),
-        Key: fileName,
-        Body: file,
-      });
-      try {
-        await this.s3Client.send(command);
-        return `https://${this.configService.getOrThrow('AWS_BUCKET_NAME')}.s3.ap-northeast-2.amazonaws.com/${fileName}`;
-      } catch {
-        throw new HttpException(
-          ErrorMessage.unknown,
-          HttpStatus.INTERNAL_SERVER_ERROR,
-        );
-      }
+    const command = new PutObjectCommand({
+      Bucket: this.configService.getOrThrow('AWS_BUCKET_NAME'),
+      Key: fileName,
+      Body: file,
+    });
+    try {
+      await this.s3Client.send(command);
+      return `https://${this.configService.getOrThrow('AWS_BUCKET_NAME')}.s3.ap-northeast-2.amazonaws.com/${fileName}`;
+    } catch {
+      throw new HttpException(
+        ErrorMessage.unknown,
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
     }
   }
 }

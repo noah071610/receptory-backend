@@ -1,8 +1,10 @@
 import {
   Body,
   Controller,
+  Delete,
   Get,
   Post,
+  Query,
   Req,
   Res,
   UseFilters,
@@ -14,7 +16,7 @@ import { HttpExceptionFilter } from 'src/filter/http-exception.filter';
 import { AuthService } from './auth.service';
 import {
   PayloadForValidateDto,
-  RegisterUserDto,
+  UserAuthPayload,
 } from './dto/payload.interface';
 import { AuthGuard } from './guards/auth.guard';
 import { GoogleOauthGuard } from './guards/google-oauth.guard';
@@ -56,14 +58,8 @@ export class AuthController {
     return getUserRes(req.user);
   }
 
-  @UseGuards(AuthGuard)
-  @Get('saves')
-  findUserSaves(@Req() req) {
-    return this.authService.findUserSaves(req.user.userId);
-  }
-
   @Post()
-  async register(@Body() data: RegisterUserDto, @Res() res: Response) {
+  async register(@Body() data: UserAuthPayload, @Res() res: Response) {
     const { accessToken, ...user } = data;
 
     // 2) 새로운 계정 생성
@@ -102,17 +98,24 @@ export class AuthController {
     return res.redirect(`http://localhost:3000/user/${user.userId}`);
   }
 
+  @UseGuards(AuthGuard)
   @Post('logout')
   logout(@Req() req: Request, @Res() res: Response): any {
-    res.cookie('jwt', '', {
+    res.cookie('sawatdee-cookie', '', {
       maxAge: 0,
     });
-    return res.send({});
+    return 'ok';
+  }
+
+  @UseGuards(AuthGuard)
+  @Delete()
+  deleteUser(@Query('pageId') feedback: string, @Req() req: Request): any {
+    return this.authService.deleteUser(req.user as User, feedback);
   }
 
   // GOOGLE
-  @Get('google')
   @UseGuards(GoogleOauthGuard)
+  @Get('google')
   googleLogin(@Res() res: Response) {
     return res.redirect('/google/callback');
   }
@@ -121,6 +124,7 @@ export class AuthController {
   @Get('google/callback')
   async googleLoginCallback(@Req() req, @Res() res: Response) {
     // 1) google 인증 종료 새 계정 생성으로
-    await this.register(req.user as RegisterUserDto, res);
+    // 이미 가입된 유저라도 걸러서 로그인으로 보내줌.
+    await this.register(req.user, res);
   }
 }

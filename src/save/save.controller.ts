@@ -1,6 +1,7 @@
 import {
   Body,
   Controller,
+  Delete,
   Get,
   Post,
   Put,
@@ -34,8 +35,20 @@ export class SaveController {
   }
 
   @UseGuards(AuthGuard)
+  @Get('list')
+  getSaves(@Req() req) {
+    return this.saveService.getSaves(req.user.userId);
+  }
+
+  @UseGuards(AuthGuard)
   @Put()
   save(@Body() data: Save, @Req() req) {
     return this.saveService.save(data, req.user.userId);
+  }
+
+  @UseGuards(AuthGuard)
+  @Delete()
+  delete(@Query('pageId') pageId: string, @Req() req) {
+    return this.saveService.delete(pageId, req.user.userId);
   }
 }
