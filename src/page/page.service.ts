@@ -31,16 +31,11 @@ export class PageService {
       content: JSON.stringify(pageContent),
     };
 
-    const savePage = await this.databaseService.page.upsert({
+    await this.databaseService.page.upsert({
       where: { userId, pageId }, // 업데이트 또는 생성할 사용자의 고유 식별자
       create: data,
       update: data,
     });
-
-    await this.cacheManager.set(
-      cacheKeys.page(pageId),
-      JSON.stringify(savePage),
-    );
 
     data.content = JSON.stringify(content);
 
@@ -48,6 +43,8 @@ export class PageService {
       where: { userId, pageId }, // 업데이트 또는 생성할 사용자의 고유 식별자
       data,
     });
+
+    await this.cacheManager.del(cacheKeys.page(pageId));
 
     return 'ok';
   }

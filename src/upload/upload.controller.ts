@@ -1,11 +1,15 @@
 import {
   Controller,
+  FileTypeValidator,
+  MaxFileSizeValidator,
+  ParseFilePipe,
   Post,
   UploadedFile,
+  UploadedFiles,
   UseFilters,
   UseInterceptors,
 } from '@nestjs/common';
-import { FileInterceptor } from '@nestjs/platform-express';
+import { FileInterceptor, FilesInterceptor } from '@nestjs/platform-express';
 import { extname } from 'path';
 import { HttpExceptionFilter } from 'src/filter/http-exception.filter';
 import { UploadService } from './upload.service';
@@ -15,23 +19,51 @@ import { UploadService } from './upload.service';
 export class UploadController {
   constructor(private readonly uploadService: UploadService) {}
 
-  @Post()
+  @Post('image')
   @UseInterceptors(FileInterceptor('image'))
   async uploadImage(
-    @UploadedFile()
+    @UploadedFile(
+      new ParseFilePipe({
+        validators: [
+          new MaxFileSizeValidator({ maxSize: 1000 }),
+          new FileTypeValidator({ fileType: 'image/jpeg' }),
+        ],
+      }),
+    )
     file: Express.Multer.File,
-    // new ParseFilePipe({
-    //   validators: [
-    //     new MaxFileSizeValidator({ maxSize: 1000 }),
-    //     new FileTypeValidator({ fileType: 'image/jpeg' }),
-    //   ],
-    // }),
   ) {
     const random_name =
       Array(32)
         .fill(null)
         .map(() => Math.round(Math.random() * 16).toString(16))
         .join('') + extname(file.originalname);
-    return await this.uploadService.upload(random_name, file.buffer);
+    return await this.uploadService.uploadImage(random_name, file.buffer);
+  }
+
+  @Post('images')
+  @UseInterceptors(FilesInterceptor('files'))
+  async uploadImages(
+    @UploadedFiles(
+      new ParseFilePipe({
+        validators: [
+          new MaxFileSizeValidator({ maxSize: 2000000 }),
+          new FileTypeValidator({ fileType: 'image' }),
+        ],
+      }),
+    )
+    files: Array<Express.Multer.File>,
+  ) {
+    const fileNames = files.map(
+      (v) =>
+        Array(32)
+          .fill(null)
+          .map(() => Math.round(Math.random() * 16).toString(16))
+          .join('') + extname(v.originalname),
+    );
+
+    return await this.uploadService.uploadImages(
+      fileNames,
+      files.map((v) => v.buffer),
+    );
   }
 }

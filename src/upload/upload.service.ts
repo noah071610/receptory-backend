@@ -15,7 +15,7 @@ export class UploadService {
     },
   });
 
-  async upload(fileName: string, file: Buffer) {
+  async uploadImage(fileName: string, file: Buffer) {
     const command = new PutObjectCommand({
       Bucket: this.configService.getOrThrow('AWS_BUCKET_NAME'),
       Key: fileName,
@@ -23,7 +23,34 @@ export class UploadService {
     });
     try {
       await this.s3Client.send(command);
-      return `https://${this.configService.getOrThrow('AWS_BUCKET_NAME')}.s3.ap-northeast-2.amazonaws.com/${fileName}`;
+      return `https://${this.configService.getOrThrow('AWS_BUCKET_NAME')}.s3.${this.configService.getOrThrow('AWS_S3_REGION')}.amazonaws.com/${fileName}`;
+    } catch {
+      throw new HttpException(
+        ErrorMessage.unknown,
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
+  }
+
+  async uploadImages(fileNames: string[], files: Buffer[]) {
+    try {
+      const srcArr = await Promise.all(
+        files.map(async (file, i) => {
+          try {
+            const command = new PutObjectCommand({
+              Bucket: this.configService.getOrThrow('AWS_BUCKET_NAME'),
+              Key: fileNames[i],
+              Body: file,
+            });
+            await this.s3Client.send(command);
+            return `https://${this.configService.getOrThrow('AWS_BUCKET_NAME')}.s3.${this.configService.getOrThrow('AWS_S3_REGION')}.amazonaws.com/${fileNames[i]}`;
+          } catch (err) {
+            console.log(err);
+          }
+        }),
+      );
+
+      return srcArr;
     } catch {
       throw new HttpException(
         ErrorMessage.unknown,
