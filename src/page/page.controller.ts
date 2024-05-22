@@ -9,7 +9,7 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { AuthGuard } from 'src/auth/guards/auth.guard';
-import { Langs, SaveType } from 'src/types';
+import { Langs, SaveType, UserPickType } from 'src/types';
 import { PageService } from './page.service';
 
 @Controller('api/page')
@@ -19,6 +19,33 @@ export class PageController {
   @Get()
   findOnePage(@Query('pageId') pageId: string) {
     return this.pageService.findOnePage(pageId);
+  }
+
+  @Post('submit')
+  submit(
+    @Body()
+    data: {
+      userPick: {
+        [id: string]: UserPickType;
+      };
+      confirmId: string;
+      pageId: string;
+      password: string;
+    },
+  ) {
+    return this.pageService.submit(data);
+  }
+
+  @Post('find-reservation')
+  findReservation(
+    @Body()
+    data: {
+      pageId: string;
+      confirmId: string;
+      password: string;
+    },
+  ) {
+    return this.pageService.findReservation(data);
   }
 
   @UseGuards(AuthGuard)

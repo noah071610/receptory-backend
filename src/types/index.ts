@@ -48,3 +48,16 @@ export interface SaveType extends _Save {
 export interface PageType extends _Save {
   content: PageContentType;
 }
+
+export interface UserPickType {
+  title: string;
+  value: UserPickValueType[];
+  index: number;
+  type: string;
+}
+export interface UserPickValueType {
+  key: string;
+  text: string;
+  description?: string;
+  src?: string;
+}
