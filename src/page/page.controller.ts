@@ -9,7 +9,7 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { AuthGuard } from 'src/auth/guards/auth.guard';
-import { Langs, SaveType, UserPickType } from 'src/types';
+import { Langs, SaveType, SelectedType } from 'src/types';
 import { PageService } from './page.service';
 
 @Controller('api/page')
@@ -25,9 +25,7 @@ export class PageController {
   submit(
     @Body()
     data: {
-      userPick: {
-        [id: string]: UserPickType;
-      };
+      selected: SelectedType[];
       confirmId: string;
       pageId: string;
       password: string;

@@ -85,4 +85,21 @@ export class SaveService {
 
     return 'ok';
   }
+
+  async checkLink(customLink: string) {
+    const save = await this.databaseService.save.findUnique({
+      where: { pageId: customLink },
+      select: {
+        pageId: true,
+      },
+    });
+    const page = await this.databaseService.page.findUnique({
+      where: { pageId: customLink },
+      select: {
+        pageId: true,
+      },
+    });
+
+    return save || page ? 'no' : 'ok';
+  }
 }

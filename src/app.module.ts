@@ -10,6 +10,7 @@ import { AppService } from './app.service';
 import { AuthModule } from './auth/auth.module';
 import { CachedService } from './cache/cached.service';
 import { DatabaseModule } from './database/database.module';
+import { InsightModule } from './insight/insight.module';
 import { TransformInterceptor } from './interceptor/transform.interceptor';
 import { PageModule } from './page/page.module';
 import { SaveModule } from './save/save.module';
@@ -47,6 +48,7 @@ const redisStore = require('cache-manager-redis-store').redisStore;
     }),
     PageModule,
     SaveModule,
+    InsightModule,
   ],
   controllers: [AppController],
   providers: [

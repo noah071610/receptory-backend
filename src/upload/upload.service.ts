@@ -18,12 +18,12 @@ export class UploadService {
   async uploadImage(fileName: string, file: Buffer) {
     const command = new PutObjectCommand({
       Bucket: this.configService.getOrThrow('AWS_BUCKET_NAME'),
-      Key: fileName,
+      Key: `images/${fileName}`,
       Body: file,
     });
     try {
       await this.s3Client.send(command);
-      return `https://${this.configService.getOrThrow('AWS_BUCKET_NAME')}.s3.${this.configService.getOrThrow('AWS_S3_REGION')}.amazonaws.com/${fileName}`;
+      return `https://${this.configService.getOrThrow('AWS_BUCKET_NAME')}.s3.${this.configService.getOrThrow('AWS_S3_REGION')}.amazonaws.com/images/${fileName}`;
     } catch {
       throw new HttpException(
         ErrorMessage.unknown,
@@ -39,11 +39,11 @@ export class UploadService {
           try {
             const command = new PutObjectCommand({
               Bucket: this.configService.getOrThrow('AWS_BUCKET_NAME'),
-              Key: fileNames[i],
+              Key: `images/${fileNames[i]}`,
               Body: file,
             });
             await this.s3Client.send(command);
-            return `https://${this.configService.getOrThrow('AWS_BUCKET_NAME')}.s3.${this.configService.getOrThrow('AWS_S3_REGION')}.amazonaws.com/${fileNames[i]}`;
+            return `https://${this.configService.getOrThrow('AWS_BUCKET_NAME')}.s3.${this.configService.getOrThrow('AWS_S3_REGION')}.amazonaws.com/images/${fileNames[i]}`;
           } catch (err) {
             console.log(err);
           }

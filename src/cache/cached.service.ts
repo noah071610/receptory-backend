@@ -1,6 +1,7 @@
 import { CACHE_MANAGER, Cache } from '@nestjs/cache-manager';
 import { HttpException, HttpStatus, Inject, Injectable } from '@nestjs/common';
 import { Page } from '@prisma/client';
+import { prismaExclude } from 'src/config/database/prismaExclude';
 import { DatabaseService } from 'src/database/database.service';
 import { ErrorMessage } from 'src/error/messages';
 import { PageType } from 'src/types';
@@ -23,6 +24,9 @@ export class CachedService {
       const page = await this.databaseService.page.findUnique({
         where: {
           pageId,
+        },
+        select: {
+          ...prismaExclude('Page', ['analyser']),
         },
       });
       if (!page) {
