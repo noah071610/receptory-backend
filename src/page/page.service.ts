@@ -41,19 +41,32 @@ function addDateCount(
   startDate: Date,
   endDate?: Date,
 ) {
-  const start = startDate;
-  const end = endDate ?? start; // endDate가 없으면 startDate로 설정
+  const start = new Date(startDate);
+  const end = endDate ? new Date(endDate) : new Date(startDate); // endDate가 없으면 startDate로 설정
 
-  for (let d = new Date(start); d <= end; d.setDate(d.getDate() + 1)) {
-    const year = d.getFullYear().toString();
-    const month = d.getMonth() + 1; // 월을 2자리 문자열로 변환
-    const date = d.getDate(); // 일을 2자리 문자열로 변환
+  const _year = end.getFullYear();
+  const _month = end.getMonth() + 1; // 월을 2자리 문자열로 변환
+  const _date = end.getDate(); // 일을 2자리 문자열로 변환
 
-    if (!obj[key][`${year}/${month}`]) {
-      obj[key][`${year}/${month}`] = Array.from({ length: 32 }, () => 0);
+  while (true) {
+    const yearKey = start.getFullYear().toString();
+
+    const year = start.getFullYear();
+    const month = start.getMonth() + 1; // 월을 2자리 문자열로 변환
+    const date = start.getDate(); // 일을 2자리 문자열로 변환
+
+    if (!obj[key][`${yearKey}-${month}`]) {
+      obj[key][`${yearKey}-${month}`] = Array.from({ length: 31 }, () => 0);
     }
 
-    obj[key][`${year}/${month}`][date] += 1;
+    obj[key][`${yearKey}-${month}`][date] += 1;
+
+    // 연도 비교
+
+    if (year >= _year && month >= _month && date >= _date) {
+      break;
+    }
+    start.setDate(start.getDate() + 1);
   }
 }
 
@@ -65,7 +78,7 @@ function convertTo24Hour(time: string) {
   if (period === 'AM' && hour === 12) hour = 0;
   if (period === 'PM' && hour !== 12) hour += 12;
 
-  return { hour, minute };
+  return { hour, minute: minute.toString().padStart(2, '0') };
 }
 
 function addTimesToObject(
@@ -101,13 +114,19 @@ function addSelectCount(
 
 const analyserCountMethodMap = {
   calendar: (obj: any, analyser: AnalyserType, value: SelectedValueType[]) => {
-    addDateCount(
-      'calendar',
-      analyser,
-      new Date(value[0].text),
-      value[1] ? new Date(value[1].text) : undefined,
-    );
-    obj.selectedDate = `${value[0].text}${value[1] ? '~' + value[1].text : ''}`;
+    const start = new Date(value[0].text);
+    const end = value[1] ? new Date(value[1].text) : undefined;
+    console.log(value, start, end);
+
+    obj.startDate = start;
+
+    if (end) {
+      obj.endDate = end;
+    } else {
+      obj.endDate = start;
+    }
+
+    addDateCount('calendar', analyser, start, end);
   },
   time: (obj: any, analyser: AnalyserType, value: SelectedValueType[]) => {
     addTimesToObject(
@@ -115,7 +134,16 @@ const analyserCountMethodMap = {
       value[0].text,
       value[1] ? value[1].text : undefined,
     );
-    obj.selectedTime = `${value[0].text}${value[1] ? '~' + value[1].text : ''}`;
+    const { hour, minute } = convertTo24Hour(value[0].text);
+    obj.startTime = parseInt(`${hour}${minute}`);
+    if (value[1]) {
+      const { hour: endHour, minute: endMinute } = convertTo24Hour(
+        value[1].text,
+      );
+      obj.endTime = parseInt(`${endHour}${endMinute}`);
+    } else {
+      obj.endTime = parseInt(`${hour}${minute}`);
+    }
   },
   choices: (
     obj: any,
@@ -124,7 +152,7 @@ const analyserCountMethodMap = {
     id: string,
   ) => {
     addSelectCount('choices', analyser, id, value);
-    obj.selectedChoices += `${value[0].key} `;
+    obj.text += `${value[0].text} `;
   },
   select: (
     obj: any,
@@ -133,16 +161,16 @@ const analyserCountMethodMap = {
     id: string,
   ) => {
     addSelectCount('select', analyser, id, value);
-    obj.selectedLists += value.map(({ key }) => `${key} `).join('');
+    obj.text += value.map(({ text }) => `${text} `).join('');
   },
   email: (obj: any, analyser: AnalyserType, value: SelectedValueType[]) => {
-    obj.submittedEmail = value[0].text;
+    obj.text += `${value[0].text} `;
   },
   nameInput: (obj: any, analyser: AnalyserType, value: SelectedValueType[]) => {
-    obj.submittedName = value[0].text;
+    obj.text += `${value[0].text} `;
   },
   phone: (obj: any, analyser: AnalyserType, value: SelectedValueType[]) => {
-    obj.submittedPhone = value[0].text;
+    obj.text += `${value[0].text.replaceAll('-', '')} `;
   },
 };
 
@@ -169,10 +197,11 @@ export class PageService {
     if (!password || !password.trim() || password.length < 5) {
       throw new HttpException(ErrorMessage.unknown, HttpStatus.BAD_REQUEST);
     }
+    console.log(pageId);
 
     const page = await this.databaseService.page.findUnique({
       where: {
-        pageId,
+        customLink: pageId,
       },
     });
     if (!page) {
@@ -248,9 +277,11 @@ export class PageService {
     }
 
     const page = await this.databaseService.page.findUniqueOrThrow({
-      where: { pageId }, // 업데이트 또는 생성할 사용자의 고유 식별자
+      where: { customLink: pageId }, // 업데이트 또는 생성할 사용자의 고유 식별자
       select: {
         analyser: true,
+        userId: true,
+        pageId: true,
       },
     });
 
@@ -262,14 +293,12 @@ export class PageService {
 
     addDateCount('submit', analyser, date);
 
-    const obj = {
-      selectedDate: '',
-      selectedTime: '',
-      selectedChoices: '',
-      selectedLists: '',
-      submittedEmail: '',
-      submittedName: '',
-      submittedPhone: '',
+    const obj: any = {
+      text: `${confirmId} `,
+      startDate: '',
+      endDate: '',
+      startTime: '',
+      endTime: '',
     };
 
     for (let i = 0; i < selected.length; i++) {
@@ -277,7 +306,9 @@ export class PageService {
       if (!value[0] || !value[0]?.text) {
         throw new HttpException(ErrorMessage.unknown, HttpStatus.BAD_REQUEST);
       }
-      analyserCountMethodMap[type](obj, analyser, value, id);
+      if (analyserCountMethodMap[type]) {
+        analyserCountMethodMap[type](obj, analyser, value, id);
+      }
     }
 
     const hashed = await this.transformPassword(password);
@@ -286,9 +317,7 @@ export class PageService {
     }
 
     await this.databaseService.page.update({
-      where: {
-        pageId,
-      },
+      where: { customLink: pageId },
       data: {
         analyser: JSON.stringify(analyser),
       },
@@ -299,8 +328,11 @@ export class PageService {
         confirmId,
         content: JSON.stringify(selected),
         password: hashed,
-        pageId,
+        // 페이지 아이디를 기반으로 찾음으로 customLink를 사용하지 않음
+        pageId: page.pageId,
+        userId: page.userId,
         ...removeEmptyProperties(obj),
+        text: obj.text,
       },
     });
 

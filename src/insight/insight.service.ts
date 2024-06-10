@@ -1,5 +1,4 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
-import { prismaExclude } from 'src/config/database/prismaExclude';
 import { DatabaseService } from 'src/database/database.service';
 import { ErrorMessage } from 'src/error/messages';
 
@@ -13,18 +12,6 @@ export class InsightService {
         userId,
         pageId,
       },
-      include: {
-        confirmations: {
-          take: 10,
-          select: {
-            ...prismaExclude('Confirmation', [
-              'confirmId',
-              'pageId',
-              'password',
-            ]),
-          },
-        },
-      },
     });
 
     if (!existingPage)
@@ -33,5 +20,87 @@ export class InsightService {
     existingPage.content = JSON.parse(existingPage.content as string);
     existingPage.analyser = JSON.parse(existingPage.analyser as string);
     return existingPage;
+  }
+
+  async getConfirmations(
+    {
+      cursor,
+      pageId,
+      curFilter: { endQuery, startQuery, type: filterType },
+      curSort: { orderby, sort },
+      searchInput,
+    }: {
+      cursor: any;
+      pageId: string;
+      searchInput: string;
+      curFilter: {
+        type: string;
+        startQuery: string;
+        endQuery: string;
+      };
+      curSort: {
+        orderby: 'desc' | 'asc';
+        sort: string;
+      };
+    },
+    userId: string,
+  ) {
+    const where: any = { pageId, userId };
+
+    if (filterType !== 'none') {
+      switch (filterType) {
+        case 'createdAt':
+          const lteEnd = new Date(endQuery);
+          lteEnd.setHours(23, 59, 0, 0);
+
+          if (startQuery) {
+            where.createdAt = { gte: new Date(startQuery) };
+          }
+          if (endQuery) {
+            where.createdAt = {
+              ...where.createdAt,
+              lte: lteEnd,
+            };
+          }
+          break;
+        case 'calendar':
+          if (startQuery) {
+            where.startDate = { gte: new Date(startQuery) };
+          }
+          if (endQuery) {
+            where.endDate = { lte: new Date(endQuery) };
+          }
+          break;
+        case 'time':
+          if (startQuery) {
+            where.startTime = { gte: parseInt(startQuery.replace(':', '')) };
+          }
+          if (endQuery) {
+            where.endTime = { lte: parseInt(endQuery.replace(':', '')) };
+          }
+          break;
+      }
+    }
+    if (searchInput) {
+      where.text = { contains: searchInput };
+    }
+
+    const existingConfirmations =
+      await this.databaseService.confirmation.findMany({
+        where,
+        take: 20,
+        skip: 20 * parseInt(cursor) ?? 0, // 커서 항목을 건너뛰기 위해 skip 사용
+        select: {
+          confirmId: true,
+          content: true,
+          isConfirm: true,
+          createdAt: true,
+        },
+        orderBy: {
+          [sort]: orderby,
+        },
+      });
+
+    return existingConfirmations;
   }
 }

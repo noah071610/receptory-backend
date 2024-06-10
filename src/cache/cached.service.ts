@@ -23,7 +23,7 @@ export class CachedService {
     if (!pageJson) {
       const page = await this.databaseService.page.findUnique({
         where: {
-          pageId,
+          customLink: pageId,
         },
         select: {
           ...prismaExclude('Page', ['analyser']),

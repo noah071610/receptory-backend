@@ -40,6 +40,7 @@ export class SaveService {
         description: '',
         format: 'inactive',
         lang,
+        customLink: newId,
         user: {
           connect: {
             userId,

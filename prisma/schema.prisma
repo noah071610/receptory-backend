@@ -6,6 +6,7 @@
 
 generator client {
   provider = "prisma-client-js"
+  previewFeatures = ["fullTextSearch", "fullTextIndex"]
 }
 
 datasource db {
@@ -42,9 +43,9 @@ model Notification {
 
 model Save {
   pageId String @id @unique
-  customLink String?
+  customLink String @unique
   thumbnail String?
-  title String?
+  title String
   description String?
   format String
   lang String
@@ -58,11 +59,13 @@ model Save {
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+
+  @@index([customLink])
 }
 
 model Page {
   pageId String @id @unique
-  customLink String?
+  customLink String @unique
   thumbnail String?
   title String
   description String?
@@ -83,22 +86,29 @@ model Page {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
+
+  @@index([customLink])
 }
 
 model Confirmation {
   confirmId String @id @unique
   password String
-  selectedDate String?
-  selectedTime String?
-  selectedChoices String?
-  selectedLists String?
-  submittedEmail String?
-  submittedName String?
-  submittedPhone String?
+  isConfirm Int @default(0)
+
+  userId String @unique
+
+  text String
+  startDate DateTime?
+  endDate DateTime?
+  startTime Int?
+  endTime Int?
+
   content Json
 
   pageId String
   page Page  @relation(fields: [pageId], references: [pageId], onDelete: Cascade)
 
   createdAt DateTime @default(now())
+
+  @@fulltext([text])
 }

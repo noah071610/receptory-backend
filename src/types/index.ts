@@ -25,7 +25,7 @@ export interface PageContentType {
     format: PageFormatType;
     lang: Langs;
     customLink: string;
-    isUseThumbnailEmbed: boolean;
+    isUseHomeThumbnail: boolean;
     isNotUseCustomLink: boolean;
     embed: {
       title: string;
@@ -43,6 +43,7 @@ export interface SaveContentType extends PageContentType {
 interface _Save {
   pageId: string;
   title: string;
+  customLink: string;
   description: string;
   format: PageFormatType;
   thumbnail: string;

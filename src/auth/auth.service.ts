@@ -222,8 +222,6 @@ export class AuthService {
   }
 
   async deleteUser(user: User, feedback: string) {
-    console.log(feedback);
-
     await this.databaseService.user.delete({
       where: {
         userId: user.userId,
