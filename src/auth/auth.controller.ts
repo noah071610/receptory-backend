@@ -12,6 +12,7 @@ import {
 } from '@nestjs/common';
 import { User } from '@prisma/client';
 import { Request, Response } from 'express';
+import { _url } from 'src/config';
 import { HttpExceptionFilter } from 'src/filter/http-exception.filter';
 import { AuthService } from './auth.service';
 import {
@@ -95,7 +96,7 @@ export class AuthController {
       maxAge: 24 * 60 * 60 * 1000 * 30, //30 day
     });
 
-    return res.redirect(`http://localhost:3000/user/${user.userId}`);
+    return res.redirect(`${_url.client}/login-success?userId=${user.userId}`);
   }
 
   @UseGuards(AuthGuard)
@@ -109,7 +110,7 @@ export class AuthController {
 
   @UseGuards(AuthGuard)
   @Delete()
-  deleteUser(@Query('pageId') feedback: string, @Req() req: Request): any {
+  deleteUser(@Query('feedback') feedback: string, @Req() req: Request): any {
     return this.authService.deleteUser(req.user as User, feedback);
   }
 

@@ -3,6 +3,35 @@ import { PrismaClient } from '@prisma/client';
 const prisma = new PrismaClient();
 
 async function main() {
+  await prisma.website.createMany({
+    data: [
+      {
+        type: 'template',
+        text: '',
+        lang: 'ko',
+        content: JSON.stringify([]),
+      },
+      {
+        type: 'template',
+        text: '',
+        lang: 'en',
+        content: JSON.stringify([]),
+      },
+      {
+        type: 'template',
+        text: '',
+        lang: 'ja',
+        content: JSON.stringify([]),
+      },
+      {
+        type: 'template',
+        text: '',
+        lang: 'th',
+        content: JSON.stringify([]),
+      },
+    ],
+  });
+
   await prisma.user.createMany({
     data: [
       {

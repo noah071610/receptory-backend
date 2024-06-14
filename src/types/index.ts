@@ -45,9 +45,11 @@ interface _Save {
   title: string;
   customLink: string;
   description: string;
-  format: PageFormatType;
+  format: string; // PageFormatType
   thumbnail: string;
-  lang: Langs;
+  lang: string; // Langs
+  createdAt: Date;
+  updatedAt: Date;
 }
 
 export interface SaveType extends _Save {
@@ -56,6 +58,7 @@ export interface SaveType extends _Save {
 export interface PageType extends _Save {
   content: PageContentType;
 }
+export interface TemplateType extends _Save {}
 
 export interface SelectedType {
   id: string;

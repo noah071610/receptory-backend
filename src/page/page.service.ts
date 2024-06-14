@@ -116,7 +116,6 @@ const analyserCountMethodMap = {
   calendar: (obj: any, analyser: AnalyserType, value: SelectedValueType[]) => {
     const start = new Date(value[0].text);
     const end = value[1] ? new Date(value[1].text) : undefined;
-    console.log(value, start, end);
 
     obj.startDate = start;
 
@@ -197,7 +196,6 @@ export class PageService {
     if (!password || !password.trim() || password.length < 5) {
       throw new HttpException(ErrorMessage.unknown, HttpStatus.BAD_REQUEST);
     }
-    console.log(pageId);
 
     const page = await this.databaseService.page.findUnique({
       where: {
@@ -220,6 +218,16 @@ export class PageService {
     return page;
   }
 
+  async findAllPages() {
+    const allPages = await this.databaseService.page.findMany({
+      select: {
+        customLink: true,
+        createdAt: true,
+      },
+    });
+    return allPages;
+  }
+
   async findReservation({
     confirmId,
     pageId,
@@ -231,21 +239,23 @@ export class PageService {
   }) {
     this.checkReservationData({ confirmId, pageId, password });
 
-    const {
-      content,
-      password: targetPassword,
-      createdAt,
-    } = await this.databaseService.confirmation.findUnique({
-      where: {
-        confirmId,
-        pageId,
-      },
-      select: {
-        password: true,
-        content: true,
-        createdAt: true,
-      },
-    });
+    const targetConfirmation =
+      await this.databaseService.confirmation.findUnique({
+        where: {
+          confirmId,
+          pageId,
+        },
+        select: {
+          password: true,
+          content: true,
+          createdAt: true,
+        },
+      });
+    if (!targetConfirmation) {
+      throw new HttpException(ErrorMessage.noPost, HttpStatus.NOT_FOUND);
+    }
+
+    const { content, password: targetPassword, createdAt } = targetConfirmation;
 
     const validatePassword = await bcrypt.compare(password, targetPassword);
 
@@ -367,7 +377,9 @@ export class PageService {
       data,
     });
 
-    await this.cacheManager.del(cacheKeys.page(pageId));
+    await this.cacheManager.del(
+      cacheKeys.page(pageContent.pageOptions.customLink),
+    );
 
     return 'ok';
   }
@@ -379,24 +391,26 @@ export class PageService {
         userId,
       },
     });
-    const pageContent = JSON.parse(page.content as string);
+    if (page) {
+      const pageContent = JSON.parse(page.content as string);
 
-    await this.databaseService.page.update({
-      where: {
-        pageId,
-        userId,
-      },
-      data: {
-        format: 'inactive',
-        content: JSON.stringify({
-          ...pageContent,
-          pageOptions: {
-            ...pageContent.pageOptions,
-            format: 'inactive',
-          },
-        }),
-      },
-    });
+      await this.databaseService.page.update({
+        where: {
+          pageId,
+          userId,
+        },
+        data: {
+          format: 'inactive',
+          content: JSON.stringify({
+            ...pageContent,
+            pageOptions: {
+              ...pageContent.pageOptions,
+              format: 'inactive',
+            },
+          }),
+        },
+      });
+    }
 
     const save = await this.databaseService.save.findUnique({
       where: {
@@ -435,24 +449,26 @@ export class PageService {
         userId,
       },
     });
-    const pageContent = JSON.parse(page.content as string);
+    if (page) {
+      const pageContent = JSON.parse(page.content as string);
 
-    await this.databaseService.page.update({
-      where: {
-        pageId,
-        userId,
-      },
-      data: {
-        lang,
-        content: JSON.stringify({
-          ...pageContent,
-          pageOptions: {
-            ...pageContent.pageOptions,
-            lang,
-          },
-        }),
-      },
-    });
+      await this.databaseService.page.update({
+        where: {
+          pageId,
+          userId,
+        },
+        data: {
+          lang,
+          content: JSON.stringify({
+            ...pageContent,
+            pageOptions: {
+              ...pageContent.pageOptions,
+              lang,
+            },
+          }),
+        },
+      });
+    }
 
     const save = await this.databaseService.save.findUnique({
       where: {

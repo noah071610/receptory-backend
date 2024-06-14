@@ -28,8 +28,7 @@ export class AdminJwtStrategy extends PassportStrategy(Strategy, 'admin') {
       );
     }
     if (
-      String(user.userId) !==
-      String(this.configService.getOrThrow('ADMIN_NUMBER'))
+      String(user.userId) !== String(this.configService.getOrThrow('ADMIN_ID'))
     ) {
       return done(new UnauthorizedException({ message: 'not admin' }), false);
     }

@@ -2,6 +2,7 @@ import { CACHE_MANAGER, Cache } from '@nestjs/cache-manager';
 import { Inject, Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config'; // ConfigService 사용을 위해 필요
 import { PassportStrategy } from '@nestjs/passport';
+import { Request } from 'express';
 import { Strategy, VerifyCallback } from 'passport-google-oauth20';
 import { _url } from 'src/config';
 import { UserAuthPayload } from '../dto/payload.interface';
@@ -22,7 +23,7 @@ export class GoogleStrategy extends PassportStrategy(Strategy, 'google') {
   }
 
   async validate(
-    request: any,
+    request: Request,
     accessToken: string,
     refreshToken: string,
     profile: any,

@@ -15,6 +15,7 @@ import { TransformInterceptor } from './interceptor/transform.interceptor';
 import { PageModule } from './page/page.module';
 import { SaveModule } from './save/save.module';
 import { UploadModule } from './upload/upload.module';
+import { WebsiteModule } from './website/website.module';
 
 // memo: 라이브러리 특성상 어쩔 수 없다.
 // eslint-disable-next-line @typescript-eslint/no-var-requires
@@ -49,6 +50,7 @@ const redisStore = require('cache-manager-redis-store').redisStore;
     PageModule,
     SaveModule,
     InsightModule,
+    WebsiteModule,
   ],
   controllers: [AppController],
   providers: [

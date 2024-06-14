@@ -21,6 +21,11 @@ export class PageController {
     return this.pageService.findOnePage(pageId);
   }
 
+  @Get('all')
+  findAll() {
+    return this.pageService.findAllPages();
+  }
+
   @Post('submit')
   submit(
     @Body()

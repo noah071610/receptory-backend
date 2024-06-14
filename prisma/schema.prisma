@@ -41,6 +41,23 @@ model Notification {
   createdAt DateTime @default(now())
 }
 
+model Template {
+  pageId String @id @unique
+  thumbnail String?
+  title String
+  description String?
+  lang String
+
+  templateLang String
+  isSecret Int @default(0)
+  
+  content Json
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+}
+
 model Save {
   pageId String @id @unique
   customLink String @unique
@@ -63,6 +80,7 @@ model Save {
   @@index([customLink])
 }
 
+
 model Page {
   pageId String @id @unique
   customLink String @unique
@@ -70,9 +88,9 @@ model Page {
   title String
   description String?
   format String
-  analyser Json
   lang String
   
+  analyser Json
   content Json
 
   save Save  @relation(fields: [pageId], references: [pageId], onDelete: Cascade)
@@ -95,7 +113,7 @@ model Confirmation {
   password String
   isConfirm Int @default(0)
 
-  userId String @unique
+  userId String
 
   text String
   startDate DateTime?
@@ -111,4 +129,15 @@ model Confirmation {
   createdAt DateTime @default(now())
 
   @@fulltext([text])
+}
+
+
+model Website {
+  id  Int  @id @default(autoincrement())
+  type String
+  text Json
+  content Json
+  lang String
+
+  createdAt DateTime @default(now())
 }
