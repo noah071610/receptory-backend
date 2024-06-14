@@ -746,6 +746,8 @@ async function main() {
   await prisma.$disconnect();
 }
 
-main().catch((error) => {
-  throw error;
-});
+if (process.env.IS_CLOUD_SERVER) {
+  main().catch((error) => {
+    throw error;
+  });
+}
