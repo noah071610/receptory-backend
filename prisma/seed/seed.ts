@@ -55,7 +55,7 @@ async function main() {
         lang: 'ko',
         pageId: 'test',
         userId: 'test',
-        customLink: 'receptory',
+        customLink: 'receptori',
         content: JSON.stringify({
           stage: 'rending',
           homeSections: [
@@ -375,7 +375,7 @@ async function main() {
             lang: 'ko',
             isUseHomeThumbnail: false,
             isNotUseCustomLink: false,
-            customLink: 'receptory',
+            customLink: 'receptori',
             embed: {
               title: '리셉토리 플랜 업그레이드 신청 페이지',
               description: '나만의 멋진 홈페이지가 단돈 커피 한 잔 값',
@@ -399,7 +399,7 @@ async function main() {
         lang: 'ko',
         pageId: 'test',
         userId: 'test',
-        customLink: 'receptory',
+        customLink: 'receptori',
         createdAt: new Date(),
         thumbnail:
           'https://media.istockphoto.com/id/133909981/ko/%EC%82%AC%EC%A7%84/%EB%82%9C%EC%9F%81%EC%9D%B4-%ED%96%84%EC%8A%A4%ED%84%B0.jpg?s=612x612&w=0&k=20&c=K4CtbCandVmwF47gDhYAljUvMy9LHH21Z1-UZMzgguY=',
@@ -729,7 +729,7 @@ async function main() {
             lang: 'ko',
             isUseHomeThumbnail: false,
             isNotUseCustomLink: false,
-            customLink: 'receptory',
+            customLink: 'receptori',
             embed: {
               title: '리셉토리 플랜 업그레이드 신청 페이지',
               description: '나만의 멋진 홈페이지가 단돈 커피 한 잔 값',

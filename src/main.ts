@@ -16,7 +16,7 @@ const isProduction = process.env.NODE_ENV === 'production';
 async function bootstrap() {
   const app = await NestFactory.create(AppModule, {
     cors: {
-      origin: isProduction ? ['https://receptory.com'] : true, // 원하는 허용된 오리진을 지정합니다.
+      origin: isProduction ? [`https://${process.env.DOMAIN}`] : true, // 원하는 허용된 오리진을 지정합니다.
       // methods: ['GET', 'POST'], // 허용할 HTTP 메서드를 지정합니다.
       allowedHeaders: ['Content-Type', 'Authorization'], // 허용할 헤더를 지정합니다.
       credentials: true, // 자격 증명 헤더를 허용합니다.
@@ -25,7 +25,6 @@ async function bootstrap() {
   });
 
   if (isProduction) {
-    app.use(csurf());
     app.use(hpp());
     app.use(helmet({ contentSecurityPolicy: false }));
   }
@@ -40,11 +39,16 @@ async function bootstrap() {
       cookie: {
         httpOnly: isProduction,
         secure: isProduction,
-        domain: isProduction && '.receptory.com',
+        domain: isProduction && `.${process.env.DOMAIN}`,
       },
     }),
   );
 
-  await app.listen(5555);
+  if (isProduction) {
+    // 무조건 뒤에 있어야함
+    app.use(csurf({ cookie: true }));
+  }
+
+  await app.listen(process.env.IS_CLOUD_SERVER ? 80 : 5555);
 }
 bootstrap();
