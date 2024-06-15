@@ -4,7 +4,6 @@ import { ConfigService } from '@nestjs/config'; // ConfigService 사용을 위�
 import { PassportStrategy } from '@nestjs/passport';
 import { Request } from 'express';
 import { Strategy, VerifyCallback } from 'passport-google-oauth20';
-import { _url } from 'src/config';
 import { UserAuthPayload } from '../dto/payload.interface';
 
 @Injectable()
@@ -16,7 +15,7 @@ export class GoogleStrategy extends PassportStrategy(Strategy, 'google') {
     super({
       clientID: configService.get('GOOGLE_CLIENT_ID'),
       clientSecret: configService.get('GOOGLE_CLIENT_SECRET'),
-      callbackURL: `${_url.server}/auth/google/callback`,
+      callbackURL: `${configService.get(process.env.NODE_ENV === 'production' ? 'SERVER' : 'LOCAL_SERVER')}/auth/google/callback`,
       passReqToCallback: true,
       scope: ['email', 'profile'],
     });

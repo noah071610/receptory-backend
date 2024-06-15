@@ -12,7 +12,6 @@ import {
 } from '@nestjs/common';
 import { User } from '@prisma/client';
 import { Request, Response } from 'express';
-import { _url } from 'src/config';
 import { HttpExceptionFilter } from 'src/filter/http-exception.filter';
 import { AuthService } from './auth.service';
 import {
@@ -96,7 +95,9 @@ export class AuthController {
       maxAge: 24 * 60 * 60 * 1000 * 30, //30 day
     });
 
-    return res.redirect(`${_url.client}/login-success?userId=${user.userId}`);
+    return res.redirect(
+      `${process.env.NODE_ENV === 'production' ? process.env.CLIENT : process.env.LOCAL_CLIENT}/login-success?userId=${user.userId}`,
+    );
   }
 
   @UseGuards(AuthGuard)
