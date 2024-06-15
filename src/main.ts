@@ -39,7 +39,7 @@ async function bootstrap() {
       cookie: {
         httpOnly: isProduction,
         secure: isProduction,
-        domain: isProduction && `.${process.env.DOMAIN}`,
+        domain: isProduction ? process.env.DOMAIN : 'localhost',
       },
     }),
   );

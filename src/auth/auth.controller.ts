@@ -93,6 +93,10 @@ export class AuthController {
     res.cookie(process.env.COOKIE_NAME, refreshToken, {
       httpOnly: process.env.NODE_ENV === 'production',
       maxAge: 24 * 60 * 60 * 1000 * 30, //30 day
+      domain:
+        process.env.NODE_ENV === 'production'
+          ? process.env.DOMAIN
+          : 'localhost',
     });
 
     return res.redirect(
