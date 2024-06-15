@@ -4,7 +4,7 @@ const port = process.env.PORT;
 export const _url = {
   client: isProduction ? `https://${domain}` : 'http://localhost:3000',
   server: isProduction
-    ? `https://${domain}/api`
+    ? `https://api.${domain}/api`
     : `http://localhost:${port}/api`,
   originServer: isProduction ? `https://${domain}` : `http://localhost:${port}`,
 };
