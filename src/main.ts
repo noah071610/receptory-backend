@@ -49,6 +49,6 @@ async function bootstrap() {
     app.use(csurf({ cookie: true }));
   }
 
-  await app.listen(process.env.IS_CLOUD_SERVER ? 80 : 5555);
+  await app.listen(process.env.PORT);
 }
 bootstrap();

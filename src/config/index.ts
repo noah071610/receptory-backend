@@ -1,6 +1,11 @@
+const isProduction = process.env.NODE_ENV === 'production';
+export const domain = process.env.DOMAIN;
+const port = process.env.PORT;
 export const _url = {
-  client: 'http://localhost:3000',
-  server: 'http://localhost:5555/api',
-  originServer: 'http://localhost:5555',
+  client: isProduction ? `https://${domain}` : 'http://localhost:3000',
+  server: isProduction
+    ? `https://${domain}/api`
+    : `http://localhost:${port}/api`,
+  originServer: isProduction ? `https://${domain}` : `http://localhost:${port}`,
 };
-// todo :
+// todo : port number?
