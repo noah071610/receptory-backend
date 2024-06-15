@@ -21,8 +21,8 @@ export class RefreshJwtStrategy extends PassportStrategy(
   }
 
   private static extractJWT(req: any): string | null {
-    if (req.cookies && req.cookies['sawatdee-cookie']) {
-      return req.cookies['sawatdee-cookie'];
+    if (req.cookies && req.cookies[process.env.COOKIE_NAME]) {
+      return req.cookies[process.env.COOKIE_NAME];
     }
     return null;
   }

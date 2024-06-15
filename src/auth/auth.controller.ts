@@ -91,7 +91,7 @@ export class AuthController {
       await this.authService.validateUser(payload);
 
     res.setHeader('Authorization', 'Bearer ' + accessToken);
-    res.cookie('sawatdee-cookie', refreshToken, {
+    res.cookie(process.env.COOKIE_NAME, refreshToken, {
       httpOnly: process.env.NODE_ENV === 'production',
       maxAge: 24 * 60 * 60 * 1000 * 30, //30 day
     });
@@ -102,7 +102,7 @@ export class AuthController {
   @UseGuards(AuthGuard)
   @Post('logout')
   logout(@Req() req: Request, @Res() res: Response): any {
-    res.cookie('sawatdee-cookie', '', {
+    res.cookie(process.env.COOKIE_NAME, '', {
       maxAge: 0,
     });
     return 'ok';
