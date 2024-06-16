@@ -16,7 +16,9 @@ const isProduction = process.env.NODE_ENV === 'production';
 async function bootstrap() {
   const app = await NestFactory.create(AppModule, {
     cors: {
-      origin: isProduction ? [`https://${process.env.DOMAIN}`] : true, // 원하는 허용된 오리진을 지정합니다.
+      origin: isProduction
+        ? [`https://${process.env.DOMAIN}`, `https://api.${process.env.DOMAIN}`]
+        : true, // 원하는 허용된 오리진을 지정합니다.
       // methods: ['GET', 'POST'], // 허용할 HTTP 메서드를 지정합니다.
       allowedHeaders: ['Content-Type', 'Authorization'], // 허용할 헤더를 지정합니다.
       credentials: true, // 자격 증명 헤더를 허용합니다.
@@ -39,7 +41,7 @@ async function bootstrap() {
       cookie: {
         httpOnly: isProduction,
         secure: isProduction,
-        domain: isProduction ? process.env.DOMAIN : 'localhost',
+        domain: isProduction ? `.${process.env.DOMAIN}` : 'localhost',
       },
     }),
   );
