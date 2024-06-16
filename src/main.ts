@@ -1,6 +1,5 @@
 import { NestFactory } from '@nestjs/core';
 import * as cookieParser from 'cookie-parser';
-import * as csurf from 'csurf';
 import helmet from 'helmet';
 import { AppModule } from './app.module';
 
@@ -42,11 +41,6 @@ async function bootstrap() {
       },
     }),
   );
-
-  if (isProduction) {
-    // 무조건 뒤에 있어야함
-    app.use(csurf({ cookie: true }));
-  }
 
   await app.listen(process.env.PORT);
 }
