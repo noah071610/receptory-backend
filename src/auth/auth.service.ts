@@ -221,6 +221,19 @@ export class AuthService {
     };
   }
 
+  async changeProfile(
+    data: { userName: string; color: string },
+    userId: string,
+  ) {
+    await this.databaseService.user.update({
+      where: {
+        userId,
+      },
+      data,
+    });
+    return 'ok';
+  }
+
   async deleteUser(user: User, feedback: string) {
     await this.databaseService.user.delete({
       where: {

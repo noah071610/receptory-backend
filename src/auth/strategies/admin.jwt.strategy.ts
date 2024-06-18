@@ -23,14 +23,14 @@ export class AdminJwtStrategy extends PassportStrategy(Strategy, 'admin') {
 
     if (!user) {
       return done(
-        new UnauthorizedException({ message: 'user does not exist' }),
+        new UnauthorizedException({ msg: 'user does not exist' }),
         false,
       );
     }
     if (
       String(user.userId) !== String(this.configService.getOrThrow('ADMIN_ID'))
     ) {
-      return done(new UnauthorizedException({ message: 'not admin' }), false);
+      return done(new UnauthorizedException({ msg: 'not admin' }), false);
     }
     return done(null, user);
   }

@@ -19,4 +19,5 @@ export const ErrorMessage = {
   loginFailBadRequest: 'error.loginFailBadRequest',
   alreadySignup: 'error.alreadySignup{{provider}}',
   noPost: 'error.noPost',
+  existCustomLink: 'error.existCustomLink',
 };

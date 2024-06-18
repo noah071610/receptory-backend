@@ -6,12 +6,15 @@ import {
   Post,
   Query,
   Req,
+  UseFilters,
   UseGuards,
 } from '@nestjs/common';
 import { AuthGuard } from 'src/auth/guards/auth.guard';
+import { HttpExceptionFilter } from 'src/filter/http-exception.filter';
 import { Langs, SaveType, SelectedType } from 'src/types';
 import { PageService } from './page.service';
 
+@UseFilters(new HttpExceptionFilter())
 @Controller('api/page')
 export class PageController {
   constructor(private readonly pageService: PageService) {}
@@ -71,5 +74,14 @@ export class PageController {
     @Req() req,
   ) {
     return this.pageService.changeLang(pageId, req.user.userId, lang);
+  }
+
+  @UseGuards(AuthGuard)
+  @Get('check-link')
+  checkLink(
+    @Query('pageId') pageId: string,
+    @Query('customLink') customLink: string,
+  ) {
+    return this.pageService.checkLink(pageId, customLink);
   }
 }

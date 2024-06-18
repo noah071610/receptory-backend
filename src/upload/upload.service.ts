@@ -23,7 +23,7 @@ export class UploadService {
     });
     try {
       await this.s3Client.send(command);
-      return `https://${this.configService.getOrThrow('AWS_BUCKET_NAME')}.s3.${this.configService.getOrThrow('AWS_S3_REGION')}.amazonaws.com/images/${fileName}`;
+      return `https://${this.configService.getOrThrow('AWS_BUCKET_NAME')}.s3.${this.configService.getOrThrow('AWS_S3_REGION')}.amazonaws.com/images/desktop/${fileName}`;
     } catch {
       throw new HttpException(
         ErrorMessage.unknown,
@@ -43,7 +43,7 @@ export class UploadService {
               Body: file,
             });
             await this.s3Client.send(command);
-            return `https://${this.configService.getOrThrow('AWS_BUCKET_NAME')}.s3.${this.configService.getOrThrow('AWS_S3_REGION')}.amazonaws.com/images/${fileNames[i]}`;
+            return `https://${this.configService.getOrThrow('AWS_BUCKET_NAME')}.s3.${this.configService.getOrThrow('AWS_S3_REGION')}.amazonaws.com/images/desktop/${fileNames[i]}`;
           } catch (err) {
             console.log(err);
           }

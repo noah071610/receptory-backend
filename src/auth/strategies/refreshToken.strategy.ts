@@ -31,7 +31,7 @@ export class RefreshJwtStrategy extends PassportStrategy(
     const user = await this.authService.tokenValidateUser(payload);
     if (!user) {
       return done(
-        new UnauthorizedException({ message: 'user does not exist' }),
+        new UnauthorizedException({ msg: 'user does not exist' }),
         false,
       );
     }

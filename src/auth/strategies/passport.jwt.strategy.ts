@@ -19,10 +19,11 @@ export class JwtStrategy extends PassportStrategy(Strategy, 'jwt') {
 
     if (!user) {
       return done(
-        new UnauthorizedException({ message: 'user does not exist' }),
+        new UnauthorizedException({ msg: 'user does not exist' }),
         false,
       );
     }
+
     return done(null, user);
   }
 }

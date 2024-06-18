@@ -27,6 +27,7 @@ const getUserRes = (user: User) => {
     userId: user.userId,
     userName: user.userName,
     userImage: user.userImage,
+    color: user.color,
     provider: user.provider,
     plan: user.plan,
     createdAt: user.createdAt,
@@ -78,6 +79,15 @@ export class AuthController {
     );
   }
 
+  @UseGuards(AuthGuard)
+  @Post('profile')
+  async changeProfile(
+    @Req() req,
+    @Body() data: { userName: string; color: string },
+  ) {
+    return await this.authService.changeProfile(data, req.user.userId);
+  }
+
   @Post('login')
   async login(
     @Body()
@@ -106,11 +116,12 @@ export class AuthController {
 
   @UseGuards(AuthGuard)
   @Post('logout')
-  logout(@Req() req: Request, @Res() res: Response): any {
+  logout(@Res() res: Response): any {
     res.cookie(process.env.COOKIE_NAME, '', {
       maxAge: 0,
     });
-    return 'ok';
+
+    return res.send('ok');
   }
 
   @UseGuards(AuthGuard)

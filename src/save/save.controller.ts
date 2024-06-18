@@ -51,10 +51,4 @@ export class SaveController {
   delete(@Query('pageId') pageId: string, @Req() req) {
     return this.saveService.delete(pageId, req.user.userId);
   }
-
-  @UseGuards(AuthGuard)
-  @Get('check-link')
-  checkLink(@Query('customLink') customLink: string) {
-    return this.saveService.checkLink(customLink);
-  }
 }

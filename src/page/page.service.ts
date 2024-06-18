@@ -50,16 +50,17 @@ function addDateCount(
 
   while (true) {
     const yearKey = start.getFullYear().toString();
+    const monthKey = (start.getMonth() + 1).toString().padStart(2, '0');
 
     const year = start.getFullYear();
     const month = start.getMonth() + 1; // 월을 2자리 문자열로 변환
     const date = start.getDate(); // 일을 2자리 문자열로 변환
 
-    if (!obj[key][`${yearKey}-${month}`]) {
-      obj[key][`${yearKey}-${month}`] = Array.from({ length: 31 }, () => 0);
+    if (!obj[key][`${yearKey}-${monthKey}`]) {
+      obj[key][`${yearKey}-${monthKey}`] = Array.from({ length: 31 }, () => 0);
     }
 
-    obj[key][`${yearKey}-${month}`][date] += 1;
+    obj[key][`${yearKey}-${monthKey}`][date] += 1;
 
     // 연도 비교
 
@@ -228,6 +229,18 @@ export class PageService {
     return allPages;
   }
 
+  async checkLink(pageId: string, customLink: string) {
+    const page = await this.databaseService.page.findUnique({
+      where: { customLink },
+      select: {
+        pageId: true,
+      },
+    });
+    if (pageId === page?.pageId) return 'ok';
+
+    return page ? 'no' : 'ok';
+  }
+
   async findReservation({
     confirmId,
     pageId,
@@ -350,6 +363,13 @@ export class PageService {
   }
 
   async deploy(pageDto: SaveType, userId: string) {
+    const checkLink = await this.checkLink(pageDto.pageId, pageDto.customLink);
+    if (checkLink === 'no') {
+      throw new HttpException(
+        ErrorMessage.existCustomLink,
+        HttpStatus.BAD_REQUEST,
+      );
+    }
     const { content, pageId } = pageDto;
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const { currentUsedColors, currentUsedImages, stage, ...pageContent } =
@@ -380,6 +400,7 @@ export class PageService {
     await this.cacheManager.del(
       cacheKeys.page(pageContent.pageOptions.customLink),
     );
+    await this.cacheManager.del(cacheKeys.page(pageId));
 
     return 'ok';
   }
