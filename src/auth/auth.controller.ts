@@ -108,6 +108,7 @@ export class AuthController {
           ? process.env.DOMAIN
           : 'localhost',
     });
+    res.setHeader('Cross-Origin-Opener-Policy', 'same-origin-allow-popups');
 
     return res.redirect(
       `${process.env.NODE_ENV === 'production' ? process.env.CLIENT : process.env.LOCAL_CLIENT}/login-success?userId=${user.userId}`,
@@ -118,7 +119,12 @@ export class AuthController {
   @Post('logout')
   logout(@Res() res: Response): any {
     res.cookie(process.env.COOKIE_NAME, '', {
+      httpOnly: process.env.NODE_ENV === 'production',
       maxAge: 0,
+      domain:
+        process.env.NODE_ENV === 'production'
+          ? process.env.DOMAIN
+          : 'localhost',
     });
 
     return res.send('ok');
