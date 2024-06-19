@@ -219,6 +219,19 @@ export class PageService {
     return page;
   }
 
+  async getPageLink(pageId: string) {
+    const page = await this.databaseService.page.findUnique({
+      where: {
+        pageId,
+      },
+      select: {
+        customLink: true,
+      },
+    });
+
+    return page ? page.customLink : null;
+  }
+
   async findAllPages() {
     const allPages = await this.databaseService.page.findMany({
       select: {

@@ -24,6 +24,7 @@ import { RefreshJwtGuard } from './guards/refresh-jwt-auth.guard';
 
 const getUserRes = (user: User) => {
   return {
+    email: user.email,
     userId: user.userId,
     userName: user.userName,
     userImage: user.userImage,

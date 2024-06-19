@@ -24,6 +24,11 @@ export class PageController {
     return this.pageService.findOnePage(pageId);
   }
 
+  @Get('link')
+  getPageLink(@Query('pageId') pageId: string) {
+    return this.pageService.getPageLink(pageId);
+  }
+
   @Get('all')
   findAll() {
     return this.pageService.findAllPages();
