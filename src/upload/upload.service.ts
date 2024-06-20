@@ -8,22 +8,23 @@ export class UploadService {
   constructor(private readonly configService: ConfigService) {}
 
   private readonly s3Client = new S3Client({
-    region: this.configService.getOrThrow('AWS_S3_REGION'), // AWS 리전
+    region: this.configService.getOrThrow('WASABI_S3_REGION'),
     credentials: {
-      accessKeyId: process.env.AWS_ACCESS_KEY_ID, // AWS 액세스 키 ID
-      secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY, // AWS 시크릿 액세스 키
+      accessKeyId: process.env.WASABI_ACCESS_KEY_ID, // AWS 액세스 키 ID
+      secretAccessKey: process.env.WASABI_SECRET_ACCESS_KEY, // AWS 시크릿 액세스 키
     },
+    endpoint: 'https://s3.ap-southeast-1.wasabisys.com/',
   });
 
   async uploadImage(fileName: string, file: Buffer) {
     const command = new PutObjectCommand({
-      Bucket: this.configService.getOrThrow('AWS_BUCKET_NAME'),
+      Bucket: this.configService.getOrThrow('WASABI_BUCKET_NAME'),
       Key: `images/${fileName}`,
       Body: file,
     });
     try {
       await this.s3Client.send(command);
-      return `https://${this.configService.getOrThrow('AWS_BUCKET_NAME')}.s3.${this.configService.getOrThrow('AWS_S3_REGION')}.amazonaws.com/images/desktop/${fileName}`;
+      return `https://${this.configService.getOrThrow('WASABI_BUCKET_NAME')}.s3.${this.configService.getOrThrow('WASABI_S3_REGION')}.amazonaws.com/images/desktop/${fileName}`;
     } catch {
       throw new HttpException(
         ErrorMessage.unknown,
@@ -38,12 +39,12 @@ export class UploadService {
         files.map(async (file, i) => {
           try {
             const command = new PutObjectCommand({
-              Bucket: this.configService.getOrThrow('AWS_BUCKET_NAME'),
+              Bucket: this.configService.getOrThrow('WASABI_BUCKET_NAME'),
               Key: `images/${fileNames[i]}`,
               Body: file,
             });
             await this.s3Client.send(command);
-            return `https://${this.configService.getOrThrow('AWS_BUCKET_NAME')}.s3.${this.configService.getOrThrow('AWS_S3_REGION')}.amazonaws.com/images/desktop/${fileNames[i]}`;
+            return `https://${this.configService.getOrThrow('WASABI_BUCKET_NAME')}.s3.${this.configService.getOrThrow('WASABI_S3_REGION')}.amazonaws.com/images/desktop/${fileNames[i]}`;
           } catch (err) {
             console.log(err);
           }

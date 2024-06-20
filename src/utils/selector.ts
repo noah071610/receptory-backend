@@ -4,6 +4,7 @@ export const saveSelector = {
   description: true,
   format: true,
   thumbnail: true,
+  thumbnailType: true,
   pageId: true,
   lang: true,
   updatedAt: true,

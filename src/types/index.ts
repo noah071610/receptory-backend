@@ -46,6 +46,7 @@ interface _Save {
   customLink: string;
   description: string;
   format: string; // PageFormatType
+  thumbnailType: string;
   thumbnail: string;
   lang: string; // Langs
   createdAt: Date;
