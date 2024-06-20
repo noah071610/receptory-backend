@@ -10,7 +10,6 @@ import {
   UseInterceptors,
 } from '@nestjs/common';
 import { FileInterceptor, FilesInterceptor } from '@nestjs/platform-express';
-import { extname } from 'path';
 import { HttpExceptionFilter } from 'src/filter/http-exception.filter';
 import { UploadService } from './upload.service';
 
@@ -32,12 +31,13 @@ export class UploadController {
     )
     file: Express.Multer.File,
   ) {
-    const random_name =
-      Array(32)
-        .fill(null)
-        .map(() => Math.round(Math.random() * 16).toString(16))
-        .join('') + extname(file.originalname);
-    return await this.uploadService.uploadImage(random_name, file.buffer);
+    // const random_name =
+    //   Array(32)
+    //     .fill(null)
+    //     .map(() => Math.round(Math.random() * 16).toString(16))
+    //     .join('') + extname(file.originalname);
+    // return await this.uploadService.uploadImage(random_name, file.buffer);
+    return '';
   }
 
   @Post('images')
@@ -53,17 +53,18 @@ export class UploadController {
     )
     files: Array<Express.Multer.File>,
   ) {
-    const fileNames = files.map(
-      (v) =>
-        Array(32)
-          .fill(null)
-          .map(() => Math.round(Math.random() * 16).toString(16))
-          .join('') + extname(v.originalname),
-    );
+    // const fileNames = files.map(
+    //   (v) =>
+    //     Array(32)
+    //       .fill(null)
+    //       .map(() => Math.round(Math.random() * 16).toString(16))
+    //       .join('') + extname(v.originalname),
+    // );
 
-    return await this.uploadService.uploadImages(
-      fileNames,
-      files.map((v) => v.buffer),
-    );
+    // return await this.uploadService.uploadImages(
+    //   fileNames,
+    //   files.map((v) => v.buffer),
+    // );
+    return [''];
   }
 }
