@@ -35,7 +35,7 @@ export class SaveService {
     const newSave = await this.databaseService.save.create({
       data: {
         pageId: newId,
-        thumbnail: '',
+        thumbnail: '/images/receptoriThumbnail.png',
         title: '',
         description: '',
         format: 'inactive',
