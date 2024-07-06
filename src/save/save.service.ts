@@ -27,6 +27,7 @@ export class SaveService {
       throw new HttpException(ErrorMessage.noPost, HttpStatus.NOT_FOUND);
 
     existingSaveData.content = JSON.parse(existingSaveData.content as string);
+
     return existingSaveData;
   }
 

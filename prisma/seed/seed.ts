@@ -406,11 +406,20 @@ async function main() {
           thumbnail:
             'https://media.istockphoto.com/id/133909981/ko/%EC%82%AC%EC%A7%84/%EB%82%9C%EC%9F%81%EC%9D%B4-%ED%96%84%EC%8A%A4%ED%84%B0.jpg?s=612x612&w=0&k=20&c=K4CtbCandVmwF47gDhYAljUvMy9LHH21Z1-UZMzgguY=',
           analyser: JSON.stringify({
-            submit: {},
-            calendar: {},
+            submit: {
+              anyDate: 0,
+              map: {},
+            },
+            calendar: {
+              anyDate: 0,
+              map: {},
+            },
             time: {
-              AM: Array.from({ length: 12 }, () => 0),
-              PM: Array.from({ length: 12 }, () => 0),
+              anytime: 0,
+              map: {
+                AM: Array.from({ length: 12 }, () => 0),
+                PM: Array.from({ length: 12 }, () => 0),
+              },
             },
             select: {},
             choices: {},

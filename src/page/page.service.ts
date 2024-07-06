@@ -15,11 +15,20 @@ import {
 } from 'src/types';
 
 const initialAnalyser = {
-  submit: {},
-  calendar: {},
+  submit: {
+    anyDate: 0,
+    map: {},
+  },
+  calendar: {
+    anyDate: 0,
+    map: {},
+  },
   time: {
-    AM: Array.from({ length: 12 }, () => 0),
-    PM: Array.from({ length: 12 }, () => 0),
+    anytime: 0,
+    map: {
+      AM: Array.from({ length: 12 }, () => 0),
+      PM: Array.from({ length: 12 }, () => 0),
+    },
   },
   select: {},
   choices: {},
@@ -56,11 +65,14 @@ function addDateCount(
     const month = start.getMonth() + 1; // 월을 2자리 문자열로 변환
     const date = start.getDate(); // 일을 2자리 문자열로 변환
 
-    if (!obj[key][`${yearKey}-${monthKey}`]) {
-      obj[key][`${yearKey}-${monthKey}`] = Array.from({ length: 31 }, () => 0);
+    if (!obj[key]['map'][`${yearKey}-${monthKey}`]) {
+      obj[key]['map'][`${yearKey}-${monthKey}`] = Array.from(
+        { length: 31 },
+        () => 0,
+      );
     }
 
-    obj[key][`${yearKey}-${monthKey}`][date] += 1;
+    obj[key]['map'][`${yearKey}-${monthKey}`][date] += 1;
 
     // 연도 비교
 
@@ -94,7 +106,7 @@ function addTimesToObject(
     const period = h < 12 ? 'AM' : 'PM';
     const hour = h % 12;
 
-    obj.time[period][hour] += 1;
+    obj.time['map'][period][hour] += 1;
   }
 }
 
@@ -115,34 +127,44 @@ function addSelectCount(
 
 const analyserCountMethodMap = {
   calendar: (obj: any, analyser: AnalyserType, value: SelectedValueType[]) => {
-    const start = new Date(value[0].text);
-    const end = value[1] ? new Date(value[1].text) : undefined;
-
-    obj.startDate = start;
-
-    if (end) {
-      obj.endDate = end;
+    if (value[0].key === 'anyDate') {
+      analyser.calendar['anyDate']++;
+      obj.anyDate = 1;
     } else {
-      obj.endDate = start;
-    }
+      const start = new Date(value[0].text);
+      const end = value[1] ? new Date(value[1].text) : undefined;
 
-    addDateCount('calendar', analyser, start, end);
+      obj.startDate = start;
+
+      if (end) {
+        obj.endDate = end;
+      } else {
+        obj.endDate = start;
+      }
+
+      addDateCount('calendar', analyser, start, end);
+    }
   },
   time: (obj: any, analyser: AnalyserType, value: SelectedValueType[]) => {
-    addTimesToObject(
-      analyser,
-      value[0].text,
-      value[1] ? value[1].text : undefined,
-    );
-    const { hour, minute } = convertTo24Hour(value[0].text);
-    obj.startTime = parseInt(`${hour}${minute}`);
-    if (value[1]) {
-      const { hour: endHour, minute: endMinute } = convertTo24Hour(
-        value[1].text,
-      );
-      obj.endTime = parseInt(`${endHour}${endMinute}`);
+    if (value[0].key === 'anytime') {
+      analyser.time['anytime']++;
+      obj.anytime = 1;
     } else {
-      obj.endTime = parseInt(`${hour}${minute}`);
+      addTimesToObject(
+        analyser,
+        value[0].text,
+        value[1] ? value[1].text : undefined,
+      );
+      const { hour, minute } = convertTo24Hour(value[0].text);
+      obj.startTime = parseInt(`${hour}${minute}`);
+      if (value[1]) {
+        const { hour: endHour, minute: endMinute } = convertTo24Hour(
+          value[1].text,
+        );
+        obj.endTime = parseInt(`${endHour}${endMinute}`);
+      } else {
+        obj.endTime = parseInt(`${hour}${minute}`);
+      }
     }
   },
   choices: (
@@ -358,6 +380,8 @@ export class PageService {
         analyser: JSON.stringify(analyser),
       },
     });
+
+    console.log(obj);
 
     await this.databaseService.confirmation.create({
       data: {

@@ -88,9 +88,18 @@ export interface TimeAnalyserType {
 }
 
 export interface AnalyserType {
-  submit: DateAnalyserType;
-  calendar: DateAnalyserType;
-  time: TimeAnalyserType;
+  submit: {
+    anyDate: number;
+    map: DateAnalyserType;
+  };
+  calendar: {
+    anyDate: number;
+    map: DateAnalyserType;
+  };
+  time: {
+    anytime: number;
+    map: TimeAnalyserType;
+  };
   select: SelectAnalyserType;
   choices: SelectAnalyserType;
 }

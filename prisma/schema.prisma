@@ -122,9 +122,11 @@ model Confirmation {
   text String
   startDate DateTime?
   endDate DateTime?
+  anyDate Int?
   startTime Int?
   endTime Int?
-
+  anytime Int?
+  
   content Json
 
   pageId String

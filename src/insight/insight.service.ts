@@ -26,7 +26,7 @@ export class InsightService {
     {
       cursor,
       pageId,
-      curFilter: { endQuery, startQuery, type: filterType },
+      curFilter: { endQuery, startQuery, type: filterType, isAnyDateOrAnytime },
       curSort: { orderby, sort },
       searchInput,
     }: {
@@ -37,6 +37,7 @@ export class InsightService {
         type: string;
         startQuery: string;
         endQuery: string;
+        isAnyDateOrAnytime: boolean;
       };
       curSort: {
         orderby: 'desc' | 'asc';
@@ -64,6 +65,10 @@ export class InsightService {
           }
           break;
         case 'calendar':
+          if (isAnyDateOrAnytime) {
+            where.anyDate = 1;
+            break;
+          }
           if (startQuery) {
             where.startDate = { gte: new Date(startQuery) };
           }
@@ -72,6 +77,10 @@ export class InsightService {
           }
           break;
         case 'time':
+          if (isAnyDateOrAnytime) {
+            where.anytime = 1;
+            break;
+          }
           if (startQuery) {
             where.startTime = { gte: parseInt(startQuery.replace(':', '')) };
           }
