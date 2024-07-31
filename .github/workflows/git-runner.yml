@@ -1,0 +1,52 @@
+name: Docker ec2 CD
+
+on:
+  workflow_run:
+    workflows: ['Docker Image CI']
+    types:
+      - completed
+
+jobs:
+  build:
+    runs-on: [self-hosted, label-go]
+
+    steps:
+      #   - name: Set .env for configuration
+      #     run: |
+      #       touch ./.env
+      #       echo "DATABASE_URL=${{ secrets.DATABASE_URL }}" >> ./.env
+      #       echo "IS_CLOUD_SERVER=${{ secrets.IS_CLOUD_SERVER }}" >> ./.env
+      #       echo "WASABI_BUCKET_NAME=${{ secrets.WASABI_BUCKET_NAME }}" >> ./.env
+      #       echo "WASABI_ACCESS_KEY_ID=${{ secrets.WASABI_ACCESS_KEY_ID }}" >> ./.env
+      #       echo "WASABI_SECRET_ACCESS_KEY=${{ secrets.WASABI_SECRET_ACCESS_KEY }}" >> ./.env
+      #       echo "WASABI_S3_REGION=${{ secrets.WASABI_S3_REGION }}" >> ./.env
+      #       echo "GOOGLE_CLIENT_ID=${{ secrets.GOOGLE_CLIENT_ID }}" >> ./.env
+      #       echo "GOOGLE_CLIENT_SECRET=${{ secrets.GOOGLE_CLIENT_SECRET }}" >> ./.env
+      #       echo "ADMIN_EMAIL=${{ secrets.ADMIN_EMAIL }}" >> ./.env
+      #       echo "ADMIN_ID=${{ secrets.ADMIN_ID }}" >> ./.env
+      #       echo "THROTTLE_TTL=${{ secrets.THROTTLE_TTL }}" >> ./.env
+      #       echo "THROTTLE_LIMIT=${{ secrets.THROTTLE_LIMIT }}" >> ./.env
+      #       echo "JWT_SECRET=${{ secrets.JWT_SECRET }}" >> ./.env
+      #       echo "JWT_REFRESH_SECRET=${{ secrets.JWT_REFRESH_SECRET }}" >> ./.env
+      #       echo "SESSION_SECRET=${{ secrets.SESSION_SECRET }}" >> ./.env
+      #       echo "COOKIE_SECRET=${{ secrets.COOKIE_SECRET }}" >> ./.env
+      #       echo "DOMAIN=${{ secrets.DOMAIN }}" >> ./.env
+      #       echo "PORT=${{ secrets.PORT }}" >> ./.env
+      #       echo "CLIENT_PORT=${{ secrets.CLIENT_PORT }}" >> ./.env
+      #       echo "CLIENT=${{ secrets.CLIENT }}" >> ./.env
+      #       echo "LOCAL_CLIENT=${{ secrets.LOCAL_CLIENT }}" >> ./.env
+      #       echo "SERVER=${{ secrets.SERVER }}" >> ./.env
+      #       echo "LOCAL_SERVER=${{ secrets.LOCAL_SERVER }}" >> ./.env
+      #       echo "COOKIE_NAME=${{ secrets.COOKIE_NAME }}" >> ./.env
+      #     shell: bash
+
+      - name: Docker remove container
+        run: |
+          sudo docker stop receptori-backend-container || true
+          sudo docker rm receptori-backend-container || true
+          sudo docker rmi noah071610/receptori-backend:latest || true
+
+      - name: Docker pull
+        run: |
+          sudo docker pull noah071610/receptori-backend:latest
+          sudo docker run -d -p 5555:5555 --name receptori-backend-container noah071610/receptori-backend

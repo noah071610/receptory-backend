@@ -1,0 +1,59 @@
+version: '3'
+
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: receptori-backend-container
+    restart: unless-stopped
+    image: noah071610/receptori-backend:latest
+    ports:
+      - ${PORT}:${PORT}
+    environment:
+      PORT: ${PORT}
+      DATABASE_URL: ${DATABASE_URL_PRODUCTION}
+      REDIS_HOST: ${REDIS_HOST_PRODUCTION}
+    depends_on:
+      - mysql_db
+      - redis
+    networks:
+      myapp_net:
+  mysql_db:
+    container_name: mysql_db
+    image: mysql
+    restart: unless-stopped
+    environment:
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
+      MYSQL_ROOT_PASSWORD: ${MYSQL_PASSWORD}
+    ports:
+      - '3306:3306'
+    command:
+      - --character-set-server=utf8mb4
+      - --collation-server=utf8mb4_unicode_ci
+    networks:
+      myapp_net:
+  redis:
+    image: 'bitnami/redis:7.2'
+    container_name: redis
+    environment:
+      REDIS_PASSWORD: ${MYSQL_PASSWORD}
+      REDIS_PORT: ${REDIS_PORT}
+      REDIS_IO_THREADS: 4
+      REDIS_IO_THREADS_DO_READS: yes
+      REDIS_DISABLE_COMMANDS: FLUSHDB,FLUSHALL
+    restart: unless-stopped
+    ports:
+      - ${REDIS_PORT}:${REDIS_PORT}
+    volumes:
+      - 'redis_data:/bitnami/redis/data'
+    networks:
+      myapp_net:
+
+volumes:
+  postgres_data:
+  redis_data:
+
+networks:
+  myapp_net:

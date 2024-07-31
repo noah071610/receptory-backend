@@ -1,0 +1,34 @@
+name: Docker Image CI
+
+on:
+  push:
+    branches: ['main']
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      # - name: Use Node.js
+      #   uses: actions/setup-node@v4
+      #   with:
+      #     node-version: "22.x"
+      # - run: npm ci
+      # - run: npm run test 테스트 도입 예정 (일단 백엔드만)
+
+      - name: Login Dockerhub
+        env:
+          DOCKER_USERNAME: ${{secrets.DOCKERHUB_USERNAME}}
+          DOCKER_PASSWORD: ${{secrets.DOCKERHUB_PASSWORD}}
+        run: docker login -u $DOCKER_USERNAME -p $DOCKER_PASSWORD
+
+      - name: Build the Docker image
+        run: docker build -t receptori-backend .
+
+      - name: tagging
+        run: docker tag receptori-backend:latest noah071610/receptori-backend:latest
+
+      - name: Push to Dockerhub
+        run: docker push noah071610/receptori-backend:latest
