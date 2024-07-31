@@ -74,5 +74,5 @@ jobs:
           -e SERVER=${{ secrets.SERVER }} \
           -e LOCAL_SERVER=${{ secrets.LOCAL_SERVER }} \
           -e COOKIE_NAME=${{ secrets.COOKIE_NAME }} \
-          -e COOKIE_NAME=${{ secrets.REDIS_HOST }} \
+          -e REDIS_HOST=${{ secrets.REDIS_HOST }} \
           noah071610/receptori-server
