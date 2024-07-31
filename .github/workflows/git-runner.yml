@@ -49,4 +49,29 @@ jobs:
       - name: Docker pull
         run: |
           sudo docker pull noah071610/receptori-backend:latest
-          sudo docker run -d -p 5555:5555 --name receptori-backend-container noah071610/receptori-backend
+          sudo docker run -d -p 5555:5555 --name receptori-backend-container \
+          -e DATABASE_URL=${{ secrets.DATABASE_URL }} \
+          -e IS_CLOUD_SERVER=${{ secrets.IS_CLOUD_SERVER }} \
+          -e WASABI_BUCKET_NAME=${{ secrets.WASABI_BUCKET_NAME }} \
+          -e WASABI_ACCESS_KEY_ID=${{ secrets.WASABI_ACCESS_KEY_ID }} \
+          -e WASABI_SECRET_ACCESS_KEY=${{ secrets.WASABI_SECRET_ACCESS_KEY }} \
+          -e WASABI_S3_REGION=${{ secrets.WASABI_S3_REGION }} \
+          -e GOOGLE_CLIENT_ID=${{ secrets.GOOGLE_CLIENT_ID }} \
+          -e GOOGLE_CLIENT_SECRET=${{ secrets.GOOGLE_CLIENT_SECRET }} \
+          -e ADMIN_EMAIL=${{ secrets.ADMIN_EMAIL }} \
+          -e ADMIN_ID=${{ secrets.ADMIN_ID }} \
+          -e THROTTLE_TTL=${{ secrets.THROTTLE_TTL }} \
+          -e THROTTLE_LIMIT=${{ secrets.THROTTLE_LIMIT }} \
+          -e JWT_SECRET=${{ secrets.JWT_SECRET }} \
+          -e JWT_REFRESH_SECRET=${{ secrets.JWT_REFRESH_SECRET }} \
+          -e SESSION_SECRET=${{ secrets.SESSION_SECRET }} \
+          -e COOKIE_SECRET=${{ secrets.COOKIE_SECRET }} \
+          -e DOMAIN=${{ secrets.DOMAIN }} \
+          -e PORT=${{ secrets.PORT }} \
+          -e CLIENT_PORT=${{ secrets.CLIENT_PORT }} \
+          -e CLIENT=${{ secrets.CLIENT }} \
+          -e LOCAL_CLIENT=${{ secrets.LOCAL_CLIENT }} \
+          -e SERVER=${{ secrets.SERVER }} \
+          -e LOCAL_SERVER=${{ secrets.LOCAL_SERVER }} \
+          -e COOKIE_NAME=${{ secrets.COOKIE_NAME }} \
+          noah071610/receptori-backend
