@@ -25,9 +25,8 @@ const redisStore = require('cache-manager-redis-store').redisStore;
   imports: [
     CacheModule.register({
       isGlobal: true,
+      url: `redis://${process.env.REDIS_HOST}:6379`,
       store: redisStore,
-      host: process.env.REDIS_HOST, // todo
-      port: 6379,
     }),
     JwtModule.register({
       global: true,
