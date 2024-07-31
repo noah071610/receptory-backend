@@ -3,8 +3,8 @@ version: '3'
 services:
   app:
     restart: unless-stopped
-    container_name: receptori-backend-container
-    image: noah071610/receptori-backend:latest
+    container_name: receptori-server-container
+    image: noah071610/receptori-server:latest
     ports:
       - ${PORT}:${PORT}
     env_file:

@@ -25,10 +25,10 @@ jobs:
         run: docker login -u $DOCKER_USERNAME -p $DOCKER_PASSWORD
 
       - name: Build the Docker image
-        run: docker build -t receptori-backend .
+        run: docker build -t receptori-server .
 
       - name: tagging
-        run: docker tag receptori-backend:latest noah071610/receptori-backend:latest
+        run: docker tag receptori-server:latest noah071610/receptori-server:latest
 
       - name: Push to Dockerhub
-        run: docker push noah071610/receptori-backend:latest
+        run: docker push noah071610/receptori-server:latest

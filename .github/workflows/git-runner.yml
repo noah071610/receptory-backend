@@ -42,14 +42,14 @@ jobs:
 
       - name: Docker remove container
         run: |
-          sudo docker stop receptori-backend-container || true
-          sudo docker rm receptori-backend-container || true
-          sudo docker rmi noah071610/receptori-backend:latest || true
+          sudo docker stop receptori-server-container || true
+          sudo docker rm receptori-server-container || true
+          sudo docker rmi noah071610/receptori-server:latest || true
 
       - name: Docker pull
         run: |
-          sudo docker pull noah071610/receptori-backend:latest
-          sudo docker run -d -p 5555:5555 --name receptori-backend-container \
+          sudo docker pull noah071610/receptori-server:latest
+          sudo docker run -d -p 5555:5555 --name receptori-server-container \
           -e DATABASE_URL=${{ secrets.DATABASE_URL }} \
           -e IS_CLOUD_SERVER=${{ secrets.IS_CLOUD_SERVER }} \
           -e WASABI_BUCKET_NAME=${{ secrets.WASABI_BUCKET_NAME }} \
@@ -74,4 +74,5 @@ jobs:
           -e SERVER=${{ secrets.SERVER }} \
           -e LOCAL_SERVER=${{ secrets.LOCAL_SERVER }} \
           -e COOKIE_NAME=${{ secrets.COOKIE_NAME }} \
-          noah071610/receptori-backend
+          -e COOKIE_NAME=${{ secrets.REDIS_HOST }} \
+          noah071610/receptori-server
