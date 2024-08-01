@@ -1,21 +1,50 @@
-FROM node:18-alpine  
+###################
+# BUILD FOR LOCAL DEVELOPMENT
+###################
+
+FROM --platform=linux/amd64 node:lts-alpine As development
 
 WORKDIR /usr/src/app
 
-COPY package*.json ./  
-COPY entrypoint.sh ./  
+COPY --chown=node:node package*.json ./
 
-RUN npm install  
+RUN npm ci
 
-COPY . .
+COPY --chown=node:node . .
 
-RUN chmod +x /usr/src/app
-RUN chmod +x /usr/src/app/entrypoint.sh
+USER node
 
-RUN npx prisma generate --schema=/usr/src/app/prisma/schema.prisma  
+###################
+# BUILD FOR PRODUCTION
+###################
+
+FROM --platform=linux/amd64 node:lts-alpine As build
+
+WORKDIR /usr/src/app
+
+COPY --chown=node:node package*.json ./
+
+COPY --chown=node:node --from=development /usr/src/app/node_modules ./node_modules
+
+COPY --chown=node:node . .
+
+RUN npx prisma generate
 
 RUN npm run build
 
-ENTRYPOINT ["/usr/src/app/entrypoint.sh", "node", "dist/src/main.js"]  
+ENV NODE_ENV=production
 
-CMD ["node", "dist/src/main.js"]
+RUN npm ci --only=production && npm cache clean --force
+
+USER node
+
+###################
+# PRODUCTION
+###################
+
+FROM --platform=linux/amd64 node:lts-alpine As production
+
+COPY --chown=node:node --from=build /usr/src/app/node_modules ./node_modules
+COPY --chown=node:node --from=build /usr/src/app/dist ./dist
+
+CMD [ "node", "dist/src/main.js" ]

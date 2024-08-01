@@ -11,68 +11,13 @@ jobs:
     runs-on: [self-hosted, label-go]
 
     steps:
-      #   - name: Set .env for configuration
-      #     run: |
-      #       touch ./.env
-      #       echo "DATABASE_URL=${{ secrets.DATABASE_URL }}" >> ./.env
-      #       echo "IS_CLOUD_SERVER=${{ secrets.IS_CLOUD_SERVER }}" >> ./.env
-      #       echo "WASABI_BUCKET_NAME=${{ secrets.WASABI_BUCKET_NAME }}" >> ./.env
-      #       echo "WASABI_ACCESS_KEY_ID=${{ secrets.WASABI_ACCESS_KEY_ID }}" >> ./.env
-      #       echo "WASABI_SECRET_ACCESS_KEY=${{ secrets.WASABI_SECRET_ACCESS_KEY }}" >> ./.env
-      #       echo "WASABI_S3_REGION=${{ secrets.WASABI_S3_REGION }}" >> ./.env
-      #       echo "GOOGLE_CLIENT_ID=${{ secrets.GOOGLE_CLIENT_ID }}" >> ./.env
-      #       echo "GOOGLE_CLIENT_SECRET=${{ secrets.GOOGLE_CLIENT_SECRET }}" >> ./.env
-      #       echo "ADMIN_EMAIL=${{ secrets.ADMIN_EMAIL }}" >> ./.env
-      #       echo "ADMIN_ID=${{ secrets.ADMIN_ID }}" >> ./.env
-      #       echo "THROTTLE_TTL=${{ secrets.THROTTLE_TTL }}" >> ./.env
-      #       echo "THROTTLE_LIMIT=${{ secrets.THROTTLE_LIMIT }}" >> ./.env
-      #       echo "JWT_SECRET=${{ secrets.JWT_SECRET }}" >> ./.env
-      #       echo "JWT_REFRESH_SECRET=${{ secrets.JWT_REFRESH_SECRET }}" >> ./.env
-      #       echo "SESSION_SECRET=${{ secrets.SESSION_SECRET }}" >> ./.env
-      #       echo "COOKIE_SECRET=${{ secrets.COOKIE_SECRET }}" >> ./.env
-      #       echo "DOMAIN=${{ secrets.DOMAIN }}" >> ./.env
-      #       echo "PORT=${{ secrets.PORT }}" >> ./.env
-      #       echo "CLIENT_PORT=${{ secrets.CLIENT_PORT }}" >> ./.env
-      #       echo "CLIENT=${{ secrets.CLIENT }}" >> ./.env
-      #       echo "LOCAL_CLIENT=${{ secrets.LOCAL_CLIENT }}" >> ./.env
-      #       echo "SERVER=${{ secrets.SERVER }}" >> ./.env
-      #       echo "LOCAL_SERVER=${{ secrets.LOCAL_SERVER }}" >> ./.env
-      #       echo "COOKIE_NAME=${{ secrets.COOKIE_NAME }}" >> ./.env
-      #     shell: bash
-
-      - name: Docker remove container
+      - name: Docker remove image
         run: |
-          sudo docker stop receptori-server-container || true
+          sudo docker compose stop app || true
           sudo docker rm receptori-server-container || true
           sudo docker rmi noah071610/receptori-server:latest || true
 
       - name: Docker pull
         run: |
           sudo docker pull noah071610/receptori-server:latest
-          sudo docker run -d -p 5555:5555 --name receptori-server-container \
-          -e DATABASE_URL=${{ secrets.DATABASE_URL }} \
-          -e IS_CLOUD_SERVER=${{ secrets.IS_CLOUD_SERVER }} \
-          -e WASABI_BUCKET_NAME=${{ secrets.WASABI_BUCKET_NAME }} \
-          -e WASABI_ACCESS_KEY_ID=${{ secrets.WASABI_ACCESS_KEY_ID }} \
-          -e WASABI_SECRET_ACCESS_KEY=${{ secrets.WASABI_SECRET_ACCESS_KEY }} \
-          -e WASABI_S3_REGION=${{ secrets.WASABI_S3_REGION }} \
-          -e GOOGLE_CLIENT_ID=${{ secrets.GOOGLE_CLIENT_ID }} \
-          -e GOOGLE_CLIENT_SECRET=${{ secrets.GOOGLE_CLIENT_SECRET }} \
-          -e ADMIN_EMAIL=${{ secrets.ADMIN_EMAIL }} \
-          -e ADMIN_ID=${{ secrets.ADMIN_ID }} \
-          -e THROTTLE_TTL=${{ secrets.THROTTLE_TTL }} \
-          -e THROTTLE_LIMIT=${{ secrets.THROTTLE_LIMIT }} \
-          -e JWT_SECRET=${{ secrets.JWT_SECRET }} \
-          -e JWT_REFRESH_SECRET=${{ secrets.JWT_REFRESH_SECRET }} \
-          -e SESSION_SECRET=${{ secrets.SESSION_SECRET }} \
-          -e COOKIE_SECRET=${{ secrets.COOKIE_SECRET }} \
-          -e DOMAIN=${{ secrets.DOMAIN }} \
-          -e PORT=${{ secrets.PORT }} \
-          -e CLIENT_PORT=${{ secrets.CLIENT_PORT }} \
-          -e CLIENT=${{ secrets.CLIENT }} \
-          -e LOCAL_CLIENT=${{ secrets.LOCAL_CLIENT }} \
-          -e SERVER=${{ secrets.SERVER }} \
-          -e LOCAL_SERVER=${{ secrets.LOCAL_SERVER }} \
-          -e COOKIE_NAME=${{ secrets.COOKIE_NAME }} \
-          -e REDIS_HOST=${{ secrets.REDIS_HOST }} \
-          noah071610/receptori-server
+          sudo docker compose up -d --build app
